@@ -177,10 +177,10 @@ remove_python_packages() {
 
 # called way down bellow
 install_python_pkgs_and_dependencies() {
-  echo "Installing python packages and dependencies. This might take a while.."
 
   if [[ $updatedebs = "true" ]]; then
     # bring in nodejs repo
+    echo "Updating debian repository within RFR_Tools "
 
     # to confirm nodejs is available for the given distribution
     curl -sLf -o /dev/null "https://deb.nodesource.com/node_9.x/dists/$OS_CODENAME/Release"
@@ -198,12 +198,15 @@ install_python_pkgs_and_dependencies() {
 
     sudo apt-get update
   fi
-  [[ $installdebs = "true" ]] && sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
+  [[ $installdebs = "true" ]] && \
+    echo "Installing debian dependencies within RFR_Tools. This might take a while.." && \
+    sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
 
   if [[ $installpythonpkg = "true" ]]; then
     echo "Removing \"$REPO_PACKAGE\" to make space for the new one"
     remove_python_packages "$REPO_PACKAGE"
-    
+
+    echo "Installing python package for RFR_Tools "
     # installing the package itself
     pushd $RFRTOOLS/miscellaneous > /dev/null
     install_python_packages
