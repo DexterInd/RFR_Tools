@@ -103,7 +103,7 @@ parse_cmdline_arguments() {
   sudo mkdir -p $DEXTER_PATH
   sudo chown pi:pi -R $PIHOME/$DEXTER
   popd > /dev/null
-
+}
 
 ################################################
 ######## Cloning script_tools  #################
