@@ -200,10 +200,10 @@ install_python_pkgs_and_dependencies() {
   fi
   [[ $installdebs = "true" ]] && sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
 
-  echo "Removing \"$REPO_PACKAGE\" to make space for the new one"
-  remove_python_packages "$REPO_PACKAGE"
-
   if [[ $installpythonpkg = "true" ]]; then
+    echo "Removing \"$REPO_PACKAGE\" to make space for the new one"
+    remove_python_packages "$REPO_PACKAGE"
+    
     # installing the package itself
     pushd $RFRTOOLS/miscellaneous > /dev/null
     install_python_packages
