@@ -1,11 +1,12 @@
 
 # definitions needed for standalone call
 PIHOME=/home/pi
-DEXTER=Dexter
-DEXTER_PATH=$PIHOME/$DEXTER
 RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
-DEXTERSCRIPT=$DEXTER_PATH/lib/Dexter/script_tools
-RFRTOOLS=$DEXTER_PATH/lib/Dexter/RFR_Tools
+DEXTER=Dexter
+LIB=lib
+DEXTER_PATH=$PIHOME/$DEXTER
+DEXTER_LIB=$DEXTER_PATH/$LIB/$DEXTER
+RFRTOOLS=$DEXTER_LIB/RFR_Tools
 REPO_PACKAGE=auto_detect_rpi
 OS_CODENAME=$(lsb_release --codename --short)
 
@@ -114,7 +115,7 @@ clone_rfrtools(){
   # it's simpler and more reliable (for now) to just delete the repo and clone a new one
   # otherwise, we'd have to deal with all the intricacies of git
   sudo rm -rf $RFRTOOLS
-  pushd $DEXTER_PATH > /dev/null
+  pushd $DEXTER_LIB > /dev/null
   git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/RFR_Tools.git
   cd $RFRTOOLS
   # useful in case we need it
