@@ -101,7 +101,7 @@ parse_cmdline_arguments() {
   # create folders recursively if they don't exist already
   # can't use <<functions_library.sh>> here because there's no
   # cloned script_tools yet at this part of the install script
-  sudo mkdir -p $DEXTER_PATH
+  sudo mkdir -p $DEXTER_LIB
   sudo chown pi:pi -R $PIHOME/$DEXTER
   popd > /dev/null
 }
