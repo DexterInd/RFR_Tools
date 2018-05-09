@@ -197,7 +197,7 @@ install_python_pkgs_and_dependencies() {
 
     sudo apt-get update
   fi
-  [[ $installdebs = "true" ]] sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
+  [[ $installdebs = "true" ]] && sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
 
   echo "Removing \"$REPO_PACKAGE\" to make space for the new one"
   remove_python_packages "$REPO_PACKAGE"
