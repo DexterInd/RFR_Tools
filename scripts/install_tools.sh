@@ -218,3 +218,5 @@ check_if_run_with_pi
 parse_cmdline_arguments "$@"
 clone_rfrtools
 install_python_pkgs_and_dependencies
+
+exit 0
