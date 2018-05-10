@@ -230,6 +230,11 @@ install_remove_python_packages() {
   fi
 }
 
+install_guis() {
+    source advanced_communications_options/install.sh
+    source Scratch_GUI/install.sh
+    source Troubleshooting_GUI/install.sh
+}
 ################################################
 ############ Calling All Functions  ############
 ################################################
@@ -239,5 +244,6 @@ parse_cmdline_arguments "$@"
 update_install_aptget
 clone_rfrtools
 install_remove_python_packages
+install_guis
 
 exit 0
