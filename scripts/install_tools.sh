@@ -90,13 +90,13 @@ parse_cmdline_arguments() {
   result=${PWD##*/}
 
   echo "Updating script_tools for $selectedbranch branch with the following options:"
-  echo "    --install-python-package=$installpythonpkg"
-  echo "    --system-wide=$systemwide"
-  echo "    --user-local=$userlocal"
-  echo "    --env-local=$envlocal"
-  echo "    --use-python3-exe-too=$usepython3exec"
-  echo "    --update-aptget=$updatedebs"
-  echo "    --install-deb-deps=$installdebs"
+  echo "  --install-python-package=$installpythonpkg"
+  echo "  --system-wide=$systemwide"
+  echo "  --user-local=$userlocal"
+  echo "  --env-local=$envlocal"
+  echo "  --use-python3-exe-too=$usepython3exec"
+  echo "  --update-aptget=$updatedebs"
+  echo "  --install-deb-deps=$installdebs"
 
   # create folders recursively if they don't exist already
   # can't use <<functions_library.sh>> here because there's no
