@@ -57,9 +57,7 @@ def read_state():
     in_string = ""
     in_string = detected_robot_file.read()
     detected_robot_file.close()
-    if in_string == 'None':
-        in_string = "GoPiGo"
-    if len(in_string) and in_string != "None":
+    if len(in_string):
         return in_string
     else:
         return 'GoPiGo'
@@ -575,7 +573,7 @@ class MainFrame(wx.Frame):
         """Constructor"""
         # wx.ComboBox
 
-        wx.Icon(SCRATCH_PATH+'favicon.ico', wx.BITMAP_TYPE_ICO)
+        wx.Icon(ICON_PATH+'favicon.ico', wx.BITMAP_TYPE_ICO)
         wx.Log.SetVerbose(False)
         wx.Frame.__init__(self, None, title="Scratch for Robots", size=(500,600))		# Set the fram size
 
