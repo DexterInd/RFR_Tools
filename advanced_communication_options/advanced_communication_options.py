@@ -28,7 +28,6 @@ class MainPanel(wx.Panel):
         self.frame = parent
 
         vSizer = wx.BoxSizer(wx.VERTICAL)
-        logoSizer = wx.BoxSizer(wx.HORIZONTAL) # goes into vSizer
         mainSizer = wx.BoxSizer(wx.HORIZONTAL) # goes into vSizer
         internalSizer = wx.BoxSizer(wx.VERTICAL)  # goes inside mainSizer
         bottomSizer = wx.BoxSizer(wx.HORIZONTAL) # goes into vSizer
@@ -37,14 +36,14 @@ class MainPanel(wx.Panel):
         font = wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, u'Helvetica')
         self.SetFont(font)
 
-        logo_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        bmp = wx.Bitmap(SCRATCH_PATH+"dex.png",type=wx.BITMAP_TYPE_PNG)
+        logoSizer = wx.BoxSizer(wx.HORIZONTAL)
+        bmp = wx.Bitmap(ICON_PATH+"dexter_industries_logo.png",type=wx.BITMAP_TYPE_PNG)
         bitmap = wx.StaticBitmap(self, bitmap=bmp)
         bmpW,bmpH = bitmap.GetSize()
-        logo_sizer.AddSpacer(20)
-        logo_sizer.Add(bitmap, 0, wx.RIGHT|wx.LEFT|wx.EXPAND)
+        logoSizer.AddSpacer(20)
+        logoSizer.Add(bitmap, 0, wx.RIGHT|wx.LEFT|wx.EXPAND)
 
-        if auto_detect_rpi.getRPIGenerationCode() == "RPI3":	#pi3 found
+        if auto_detect_rpi.getRPIGenerationCode().find("RPI3") > -1:	#pi3 found
             #Show bluetooth too
             self.enable_blt_button = wx.Button(self,-1,label="Enable Bluetooth")
             self.enable_blt_button.Bind(wx.EVT_BUTTON, self.enable_blt_button_OnClick)
@@ -62,14 +61,20 @@ class MainPanel(wx.Panel):
 
 
         internalSizer.AddSpacer(10)
-        internalSizer.Add( self.enable_blt_button, 1)
-        internalSizer.AddSpacer(20)
+        try:
+            internalSizer.Add( self.enable_blt_button, 1)
+            internalSizer.AddSpacer(20)
+        except:  # fails if not on a Pi3
+            pass
         internalSizer.Add( self.enable_ir_receiver_button, 1)
         internalSizer.AddSpacer(20)
         internalSizer.Add( self.enable_uart_button, 1)
         internalSizer.AddSpacer(20)
         internalSizer.Add( label, 0, wx.EXPAND )
-        internalSizer.Add( label_blt, 0, wx.EXPAND )
+        try:
+            internalSizer.Add( label_blt, 0, wx.EXPAND )
+        except: # fails if not on a Pi3
+            pass
         internalSizer.Add( label_ir, 0, wx.EXPAND )
         internalSizer.Add( label_uart, 0, wx.EXPAND )
 
@@ -153,9 +158,12 @@ class MainFrame(wx.Frame):
     def __init__(self):
         wx.Icon(ICON_PATH+'favicon.ico', wx.BITMAP_TYPE_ICO)
         wx.Log.SetVerbose(False)
-        wx.Frame.__init__(self, None, title="Advanced Communication Options", size=(400,500))		# Set the fram size
+        wx.Frame.__init__(self, None, title="Advanced Communication Options", size=(500,500))		# Set the frame size
 
-        panel = MainPanel(self)
+        self.panel = MainPanel(self)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.panel,1,wx.EXPAND)
+        self.SetSizerAndFit(sizer)
         self.Center()
 
 class Main(wx.App):
