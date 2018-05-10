@@ -134,7 +134,17 @@ update_install_aptget() {
   fi
   [[ $installdebs = "true" ]] && \
     echo "Installing debian dependencies within RFR_Tools. This might take a while.." && \
-    sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
+    sudo apt-get install git \
+                         build-essential \
+                         libi2c-dev \
+                         i2c-tools \
+                         python-dev \
+                         python3-dev \
+                         python-setuptools \
+                         python3-setuptools \
+                         python-pip \
+                         python3-pip \
+                         libffi-dev
 }
 
 ################################################
