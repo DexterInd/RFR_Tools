@@ -134,7 +134,7 @@ update_install_aptget() {
   fi
   [[ $installdebs = "true" ]] && \
     echo "Installing debian dependencies within RFR_Tools. This might take a while.." && \
-    sudo apt-get install git \
+    sudo apt-get install -y git \
                          build-essential \
                          libi2c-dev \
                          i2c-tools \
