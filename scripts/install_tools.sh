@@ -89,7 +89,7 @@ parse_cmdline_arguments() {
   pushd $PIHOME > /dev/null
   result=${PWD##*/}
 
-  echo "Updating script_tools for $selectedbranch branch with the following options:"
+  echo "Updating RFR_Tools for $selectedbranch branch with the following options:"
   echo "  --install-python-package=$installpythonpkg"
   echo "  --system-wide=$systemwide"
   echo "  --user-local=$userlocal"
@@ -100,7 +100,7 @@ parse_cmdline_arguments() {
 
   # create folders recursively if they don't exist already
   # can't use <<functions_library.sh>> here because there's no
-  # cloned script_tools yet at this part of the install script
+  # cloned RFR_Tools yet at this part of the install script
   sudo mkdir -p $DEXTER_LIB
   sudo chown pi:pi -R $PIHOME/$DEXTER
   popd > /dev/null
@@ -148,7 +148,7 @@ update_install_aptget() {
 }
 
 ################################################
-######## Cloning script_tools  #################
+########### Cloning RFR_Tools  #################
 ################################################
 
 # called way down bellow
