@@ -107,6 +107,37 @@ parse_cmdline_arguments() {
 }
 
 ################################################
+###### Update and Install with Apt-Get  ########
+################################################
+
+# called way down bellow
+update_install_aptget() {
+  if [[ $updatedebs = "true" ]]; then
+    # bring in nodejs repo
+    echo "Updating debian repository within RFR_Tools "
+
+    # to confirm nodejs is available for the given distribution
+    curl -sLf -o /dev/null "https://deb.nodesource.com/node_9.x/dists/$OS_CODENAME/Release"
+    ret_val=$?
+    if [[ $ret_val -eq 0 ]]; then
+      # add gpg key for nodejs
+      curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+      # add nodejs to apt-get source list
+      sudo sh -c "echo 'deb https://deb.nodesource.com/node_9.x $OS_CODENAME main' > /etc/apt/sources.list.d/nodesource.list"
+      sudo sh -c "echo 'deb-src https://deb.nodesource.com/node_9.x $OS_CODENAME main' >> /etc/apt/sources.list.d/nodesource.list"
+      echo "Added NodeJS repo to source for apt-get for \"$OS_CODENAME\" distribution"
+    else
+      echo "Couldn't add Nodejs repo to source because it's not available for \"$OS_CODENAME\" distribution"
+    fi
+
+    sudo apt-get update
+  fi
+  [[ $installdebs = "true" ]] && \
+    echo "Installing debian dependencies within RFR_Tools. This might take a while.." && \
+    sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
+}
+
+################################################
 ######## Cloning script_tools  #################
 ################################################
 
@@ -125,7 +156,7 @@ clone_rfrtools(){
 
 
 ################################################
-######## Install Python Packages & Deps ########
+######## Install/Remove Python Packages ########
 ################################################
 
 # called by <<install_python_pkgs_and_dependencies>>
@@ -176,32 +207,7 @@ remove_python_packages() {
 }
 
 # called way down bellow
-install_python_pkgs_and_dependencies() {
-
-  if [[ $updatedebs = "true" ]]; then
-    # bring in nodejs repo
-    echo "Updating debian repository within RFR_Tools "
-
-    # to confirm nodejs is available for the given distribution
-    curl -sLf -o /dev/null "https://deb.nodesource.com/node_9.x/dists/$OS_CODENAME/Release"
-    ret_val=$?
-    if [[ $ret_val -eq 0 ]]; then
-      # add gpg key for nodejs
-      curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
-      # add nodejs to apt-get source list
-      sudo sh -c "echo 'deb https://deb.nodesource.com/node_9.x $OS_CODENAME main' > /etc/apt/sources.list.d/nodesource.list"
-      sudo sh -c "echo 'deb-src https://deb.nodesource.com/node_9.x $OS_CODENAME main' >> /etc/apt/sources.list.d/nodesource.list"
-      echo "Added NodeJS repo to source for apt-get for \"$OS_CODENAME\" distribution"
-    else
-      echo "Couldn't add Nodejs repo to source because it's not available for \"$OS_CODENAME\" distribution"
-    fi
-
-    sudo apt-get update
-  fi
-  [[ $installdebs = "true" ]] && \
-    echo "Installing debian dependencies within RFR_Tools. This might take a while.." && \
-    sudo apt-get install $(cat $RFRTOOLS/scripts/debrequires.txt)
-
+install_remove_python_packages() {
   if [[ $installpythonpkg = "true" ]]; then
     echo "Removing \"$REPO_PACKAGE\" to make space for the new one"
     remove_python_packages "$REPO_PACKAGE"
@@ -220,7 +226,8 @@ install_python_pkgs_and_dependencies() {
 
 check_if_run_with_pi
 parse_cmdline_arguments "$@"
+update_install_aptget
 clone_rfrtools
-install_python_pkgs_and_dependencies
+install_remove_python_packages
 
 exit 0
