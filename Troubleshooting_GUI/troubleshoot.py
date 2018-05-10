@@ -5,7 +5,7 @@ from datetime import datetime
 import subprocess
 from auto_detect_robot import *
 
-ICON_PATH="/home/pi/Dexter/lib/Dexter/RFR_Tools/"
+ICON_PATH="/home/pi/Dexter/lib/Dexter/RFR_Tools/icons/"
 
 
 def send_bash_command(bashCommand):
@@ -51,7 +51,7 @@ class MainPanel(wx.Panel):
         #-------------------------------------------------------------------
         # icon
         icon_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        bmp = wx.Bitmap(ICON_PATH+"dex.png",
+        bmp = wx.Bitmap(ICON_PATH+"dexter_industries_logo.png",
             type=wx.BITMAP_TYPE_PNG)	# Draw the photograph.
         bitmap=wx.StaticBitmap(self,bitmap=bmp)
         bmpW,bmpH = bitmap.GetSize()
@@ -190,20 +190,7 @@ class MainPanel(wx.Panel):
         # vSizer.Add(caution_sizer,1,wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
         
         self.SetSizerAndFit(vSizer)
-        # self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)		# Sets background picture
-    
-    #----------------------------------------------------------------------
-    def OnEraseBackground(self, evt):
-        
-        dc = evt.GetDC()
-        
-        # if not dc:
-        # 	dc = wx.ClientDC(self)
-        # 	rect = self.GetUpdateRegion().GetBox()
-        # 	dc.SetClippingRect(rect)
-        # dc.Clear()
-        # bmp = wx.Bitmap("/home/pi/Desktop/GoBox/Troubleshooting_GUI/dex.png")	# Draw the photograph.
-        # dc.DrawBitmap(bmp, 10, 10)						# Absolute position of where to put the picture
+
     
     ###############################################################################
     def troubleshoot_gopigo(self, event):
@@ -345,7 +332,7 @@ class MainPanel(wx.Panel):
         
         # Depending on what the user chose, we either cancel or complete.
         if ran_dialog:
-            dlg = wx.MessageDialog(self, 'All tests are complete. The Log has been saved to Desktop. Please copy it and upload it into our Forums.  www.dexterindustries.com/Forum', 'OK', wx.OK|wx.ICON_INFORMATION)
+            dlg = wx.MessageDialog(self, 'Tests are being run. The Log will be saved to Desktop. Please copy it after completion and upload it into our Forums.  www.dexterindustries.com/Forum', 'OK', wx.OK|wx.ICON_INFORMATION)
             dlg.ShowModal()
             dlg.Destroy()
         else:
@@ -364,7 +351,7 @@ class MainFrame(wx.Frame):
         """Constructor"""
         # wx.ComboBox
         
-        wx.Icon('/home/pi/di_update/Raspbian_For_Robots/Troubleshooting_GUI/favicon.ico', wx.BITMAP_TYPE_ICO)
+        wx.Icon(ICON_PATH+'favicon.ico', wx.BITMAP_TYPE_ICO)
         wx.Log.SetVerbose(False)
         
         # Set the frame arguments

@@ -21,10 +21,11 @@ import sys
 PIHOME="/home/pi"
 DEXTER="Dexter"
 SCRATCH="Scratch_GUI"
+RFR_TOOLS="RFR_Tools"
 s = "/";
 seq = (PIHOME, DEXTER,"lib",DEXTER,SCRATCH) 
 SCRATCH_PATH = s.join( seq )+"/"
-ICON_PATH = SCRATCH_PATH+"icons/"
+ICON_PATH = s.join( (PIHOME, DEXTER,"lib",DEXTER, RFR_TOOLS, "icons")  )+"/"
 
 scratch_controller = None
 
@@ -56,7 +57,9 @@ def read_state():
     in_string = ""
     in_string = detected_robot_file.read()
     detected_robot_file.close()
-    if len(in_string):
+    if in_string == 'None':
+        in_string = "GoPiGo"
+    if len(in_string) and in_string != "None":
         return in_string
     else:
         return 'GoPiGo'
@@ -210,10 +213,10 @@ class MainPanel(wx.Panel):
         print("Loading Scratch up for {}".format(robot))
 
         logo_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        bmp = wx.Bitmap(ICON_PATH+"dex.png",type=wx.BITMAP_TYPE_PNG)
+        bmp = wx.Bitmap(ICON_PATH+"dexter_industries_logo.png",type=wx.BITMAP_TYPE_PNG)
         bitmap = wx.StaticBitmap(self, bitmap=bmp)
         bmpW,bmpH = bitmap.GetSize()
-        logo_sizer.Add(bitmap,0,wx.RIGHT|wx.LEFT|wx.EXPAND,50)
+        logo_sizer.Add(bitmap,0,wx.RIGHT|wx.LEFT|wx.EXPAND)
 
         #-------------------------------------------------------------------
         # Standard Buttons

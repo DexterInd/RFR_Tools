@@ -32,6 +32,7 @@ if [ -d $PIHOME/Desktop/GoBox/Scratch_GUI ] ; then
 	sudo rm -r $PIHOME/Desktop/GoBox/Scratch_GUI
 fi
 
+# reinstall scratchpy
 pushd $LIB_PATH > /dev/null
 delete_folder scratchpy
 git clone --quiet --depth=1 https://github.com/DexterInd/scratchpy
@@ -52,7 +53,7 @@ sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop							# Desktop shortcut per
 ######
 # Added these to solve the menu problem of scratch.  Then removed them.  
 # These are removed for now, the call up the Scratch Gui, not the scratch start.
-# sudo rm /usr/share/raspi-ui-overrides/applications/scratch.desktop										# Remove the Scratch Start button in the Menu
+# sudo rm /usr/share/raspi-ui-overrides/applications/scratch.desktop					# Remove the Scratch Start button in the Menu
 # sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/applications/scratch.desktop						# Copy the Scratch_Start to the Menu
 # sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/raspi-ui-overrides/applications/scratch.desktop		# Copy the Scratch_Start to the Menu
 # sudo chmod 777 /usr/share/applications/scratch.desktop							# Menu Shortcut Permissions.
@@ -72,7 +73,7 @@ sudo chmod ugo+r $SCRATCH_PATH/new.sb	# user, group, etc are just read only
 # # Make select_state, error_log, nohup.out readable and writable
 sudo chmod 666 $SCRATCH_PATH/selected_state
 sudo chmod 666 $SCRATCH_PATH/error_log
-sudo chmod 666 $PIHOME/nohup.out
+[ -f $PIHOME/nohup.out ] && sudo chmod 666 $PIHOME/nohup.out
 
 # Install Scratch Example Shortcuts for the Products
 # This will create symbolic links to the various example scripts.  https://blog.bartbania.com/raspberry_pi/create-symbolic-links-in-linux/

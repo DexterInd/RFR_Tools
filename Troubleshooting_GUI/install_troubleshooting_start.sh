@@ -21,7 +21,7 @@ TROUBLESHOOTING=Troubleshooting_GUI
 TROUBLESHOOTING_PATH=$DEXTERLIB_PATH/$TROUBLESHOOTING
 
 sudo sh -c "curl -kL dexterindustries.com/update_tools | bash"
-source DEXTERLIB_PATH/script_tools/functions_library.sh
+source $DEXTERLIB_PATH/script_tools/functions_library.sh
 mkdir -p TROUBLESHOOTING_PATH
 
 if ! quiet_mode
@@ -29,7 +29,7 @@ then
     sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes 
 fi
 
-sudo cp -r RFR_TOOLS_PATH/ $TROUBLESHOOTING_PATH
+sudo cp -r $RFR_TOOLS_PATH/$TROUBLESHOOTING $TROUBLESHOOTING_PATH
 # Copy shortcut to desktop.
 #sudo rm /home/pi/Desktop/Troubleshooting_Start.desktop
 # by using -f we force the copy
