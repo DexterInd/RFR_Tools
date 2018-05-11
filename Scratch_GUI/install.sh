@@ -20,6 +20,11 @@ SCRATCH_PATH=$DEXTERLIB_PATH/$SCRATCH
 curl -kL dexterindustries.com/update_tools | sudo bash
 source $PIHOME/$DEXTER/lib/$DEXTER/script_tools/functions_library.sh
 
+if ! quiet_mode
+then
+    sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes 
+fi
+
 mkdir -p $SCRATCH_PATH
 
 pushd $SCRATCH_PATH > /dev/null

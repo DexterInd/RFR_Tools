@@ -16,15 +16,15 @@ RFR_TOOLS_PATH=$DEXTERLIB_PATH/RFR_Tools
 TROUBLESHOOTING=Troubleshooting_GUI
 TROUBLESHOOTING_PATH=$DEXTERLIB_PATH/$TROUBLESHOOTING
 
-
 mkdir -p $TROUBLESHOOTING_PATH
+
+source $PIHOME/$DEXTER/lib/$DEXTER/script_tools/functions_library.sh
 
 if ! quiet_mode
 then
-    curl -kL dexterindustries.com/update_tools | bash
     sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes 
 fi
-source $DEXTERLIB_PATH/script_tools/functions_library.sh
+
 
 sudo cp -r $RFR_TOOLS_PATH/$TROUBLESHOOTING $DEXTERLIB_PATH
 # Copy shortcut to desktop.
