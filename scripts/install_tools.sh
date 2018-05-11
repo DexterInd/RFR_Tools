@@ -231,7 +231,7 @@ install_remove_python_packages() {
 }
 
 install_guis() {
-    pushd ../advanced_communications_options >/dev/null
+    pushd $RFRTOOLS/advanced_communications_options >/dev/null
     bash install.sh
     cd ../Scratch_GUI
     bash install.sh
