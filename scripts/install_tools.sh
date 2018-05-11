@@ -231,9 +231,9 @@ install_remove_python_packages() {
 }
 
 install_guis() {
-    source advanced_communications_options/install.sh
-    source Scratch_GUI/install.sh
-    source Troubleshooting_GUI/install.sh
+    bash ../advanced_communications_options/install.sh
+    bash ../Scratch_GUI/install.sh
+    bash ../Troubleshooting_GUI/install.sh
 }
 ################################################
 ############ Calling All Functions  ############
