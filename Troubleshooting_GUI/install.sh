@@ -5,29 +5,26 @@
 # Helpful Link on Bin Paths:  http://www.cyberciti.biz/faq/how-do-i-find-the-path-to-a-command-file/
 # needs to be sourced from here when we call this as a standalone
 
+
 PIHOME=/home/pi
 DEXTER=Dexter
 DEXTER_PATH=$PIHOME/$DEXTER
-RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
-
-PIHOME=/home/pi
-RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
-DEXTER=Dexter
-LIB=lib
-LIB_PATH=$PIHOME/$DEXTER/$LIB
+LIB_PATH=$DEXTER_PATH/lib
 DEXTERLIB_PATH=$LIB_PATH/$DEXTER
+RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
 RFR_TOOLS_PATH=$DEXTERLIB_PATH/RFR_Tools
 TROUBLESHOOTING=Troubleshooting_GUI
 TROUBLESHOOTING_PATH=$DEXTERLIB_PATH/$TROUBLESHOOTING
 
-sudo sh -c "curl -kL dexterindustries.com/update_tools | bash"
-source $DEXTERLIB_PATH/script_tools/functions_library.sh
+
 mkdir -p TROUBLESHOOTING_PATH
 
 if ! quiet_mode
 then
+    curl -kL dexterindustries.com/update_tools | bash
     sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes 
 fi
+source $DEXTERLIB_PATH/script_tools/functions_library.sh
 
 sudo cp -r $RFR_TOOLS_PATH/$TROUBLESHOOTING $TROUBLESHOOTING_PATH
 # Copy shortcut to desktop.
@@ -39,4 +36,4 @@ sudo chmod +x /home/pi/Desktop/Troubleshooting_Start.desktop
 
 delete_folder /home/pi/GoBox/Troubleshooting
 # Make troubleshooting_start executable.
-sudo chmod +x /home/pi/Desktop/GoBox/Troubleshooting_GUI/Troubleshooting_Start.sh
+sudo chmod +x $TROUBLESHOOTING_PATH/Troubleshooting_Start.sh
