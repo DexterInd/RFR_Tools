@@ -20,12 +20,12 @@ SCRATCH_PATH=$DEXTERLIB_PATH/$SCRATCH
 curl -kL dexterindustries.com/update_tools | sudo bash
 source $PIHOME/$DEXTER/lib/$DEXTER/script_tools/functions_library.sh
 
-create_folder $SCRATCH_PATH
+mkdir -p $SCRATCH_PATH
 
 pushd $SCRATCH_PATH > /dev/null
 
 feedback "Installing Scratch Environment"
-cp -f $RFR_TOOLS/$SCRATCH/* $SCRATCH_PATH
+cp -r $RFR_TOOLS/$SCRATCH/ $DEXTERLIB_PATH/
 
 # if the old location exists, get rid of it
 if [ -d $PIHOME/Desktop/GoBox/Scratch_GUI ] ; then

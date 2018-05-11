@@ -17,7 +17,7 @@ TROUBLESHOOTING=Troubleshooting_GUI
 TROUBLESHOOTING_PATH=$DEXTERLIB_PATH/$TROUBLESHOOTING
 
 
-mkdir -p TROUBLESHOOTING_PATH
+mkdir -p $TROUBLESHOOTING_PATH
 
 if ! quiet_mode
 then
@@ -26,7 +26,7 @@ then
 fi
 source $DEXTERLIB_PATH/script_tools/functions_library.sh
 
-sudo cp -r $RFR_TOOLS_PATH/$TROUBLESHOOTING $TROUBLESHOOTING_PATH
+sudo cp -r $RFR_TOOLS_PATH/$TROUBLESHOOTING $DEXTERLIB_PATH
 # Copy shortcut to desktop.
 #sudo rm /home/pi/Desktop/Troubleshooting_Start.desktop
 # by using -f we force the copy
@@ -35,5 +35,3 @@ sudo cp -f $TROUBLESHOOTING_PATH/Troubleshooting_Start.desktop /home/pi/Desktop
 sudo chmod +x /home/pi/Desktop/Troubleshooting_Start.desktop
 
 delete_folder /home/pi/GoBox/Troubleshooting
-# Make troubleshooting_start executable.
-sudo chmod +x $TROUBLESHOOTING_PATH/Troubleshooting_Start.sh
