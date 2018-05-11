@@ -231,9 +231,13 @@ install_remove_python_packages() {
 }
 
 install_guis() {
-    bash ../advanced_communications_options/install.sh
-    bash ../Scratch_GUI/install.sh
-    bash ../Troubleshooting_GUI/install.sh
+    pushd ../advanced_communications_options >/dev/null
+    bash install.sh
+    cd ../Scratch_GUI
+    bash install.sh
+    cd ../Troubleshooting_GUI
+    bash install.sh
+    popd > /dev/null
 }
 ################################################
 ############ Calling All Functions  ############
