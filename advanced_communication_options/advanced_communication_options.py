@@ -86,14 +86,14 @@ class MainPanel(wx.Panel):
         exit_button = wx.Button(self, label="Exit")
         exit_button.Bind(wx.EVT_BUTTON, self.onClose)
 
-        bottomSizer.AddSpacer(300)
-        bottomSizer.Add( exit_button, 0, wx.ALIGN_RIGHT )
+        # bottomSizer.AddSpacer(300)
+        # bottomSizer.Add( exit_button, 0, wx.ALIGN_RIGHT )
 
         vSizer.Add(logoSizer, 0, wx.SHAPED | wx.EXPAND)
-        vSizer.AddSpacer(150)
+        vSizer.AddSpacer(10)
         vSizer.Add(mainSizer, 1, wx.EXPAND)
         vSizer.AddSpacer(40)
-        vSizer.Add(bottomSizer, 1, wx.EXPAND | wx.ALIGN_BOTTOM)
+        vSizer.Add(exit_button, 0, wx.ALIGN_RIGHT | wx.ALIGN_BOTTOM)
         vSizer.AddSpacer(10)
         self.SetSizerAndFit(vSizer)
 
@@ -158,7 +158,7 @@ class MainFrame(wx.Frame):
     def __init__(self):
         wx.Icon(ICON_PATH+'favicon.ico', wx.BITMAP_TYPE_ICO)
         wx.Log.SetVerbose(False)
-        wx.Frame.__init__(self, None, title="Advanced Communication Options", size=(500,500))		# Set the frame size
+        wx.Frame.__init__(self, None, title="Advanced Communication Options", size=(500,300))		# Set the frame size
 
         self.panel = MainPanel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
