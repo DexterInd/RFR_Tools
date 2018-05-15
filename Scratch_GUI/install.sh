@@ -49,6 +49,8 @@ popd > /dev/null
 feedback "Installing Scratch on the desktop"
 sudo cp -f $FINAL_SCRATCH_PATH/Scratch_Start.desktop $PIHOME/Desktop
 sudo cp -f $FINAL_SCRATCH_PATH/Scratch_Start.desktop /usr/share/applications/
+sudo rm -f /usr/share/raspi-ui-overrides/applications/scratch.desktop
+sudo rm -f /usr/share/applications/scratch.desktop
 sudo lxpanelctl restart
 # Make shortcut executable
 sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop							# Desktop shortcut permissions.
