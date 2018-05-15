@@ -25,6 +25,7 @@ then
     sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes 
 fi
 
+feedback "Installing TroubleShooting"
 
 sudo cp -r $RFR_TOOLS_PATH/$TROUBLESHOOTING $DEXTERLIB_PATH
 # Copy shortcut to desktop.
@@ -35,3 +36,5 @@ sudo cp -f $TROUBLESHOOTING_PATH/Troubleshooting_Start.desktop /home/pi/Desktop
 sudo chmod +x /home/pi/Desktop/Troubleshooting_Start.desktop
 
 delete_folder /home/pi/GoBox/Troubleshooting
+
+feedback "Done with TRoubleshooting"
