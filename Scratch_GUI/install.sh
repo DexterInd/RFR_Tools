@@ -17,12 +17,13 @@ RFR_TOOLS=$DEXTERLIB_PATH/RFR_Tools
 SCRATCH=Scratch_GUI
 FINAL_SCRATCH_PATH=$DEXTERLIB_PATH/$SCRATCH
 
-curl -kL dexterindustries.com/update_tools | sudo bash
+# script_tools is installed within each robot's install script
+# script_tools isn't installed with RFR_Tools
 source $PIHOME/$DEXTER/lib/$DEXTER/script_tools/functions_library.sh
 
 if ! quiet_mode
 then
-    sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes 
+    sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes
 fi
 
 # ensure ~/Dexter/lib/Dexter exists
