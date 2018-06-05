@@ -6,6 +6,7 @@ DEXTER=Dexter
 LIB=lib
 DEXTER_PATH=$PIHOME/$DEXTER
 DEXTER_LIB=$DEXTER_PATH/$LIB/$DEXTER
+DEXTERSCRIPT=$DEXTER_LIB/script_tools
 RFRTOOLS=$DEXTER_LIB/RFR_Tools
 REPO_PACKAGE=auto_detect_rpi
 OS_CODENAME=$(lsb_release --codename --short)
@@ -152,7 +153,7 @@ update_install_aptget() {
 ################################################
 
 # called way down bellow
-clone_rfrtools(){
+clone_rfrtools_and_install_script_tools(){
   # it's simpler and more reliable (for now) to just delete the repo and clone a new one
   # otherwise, we'd have to deal with all the intricacies of git
   sudo rm -rf $RFRTOOLS
@@ -162,6 +163,20 @@ clone_rfrtools(){
   # useful in case we need it
   current_branch=$(git branch | grep \* | cut -d ' ' -f2-)
   popd > /dev/null
+
+  # update script_tools first
+  curl --silent -kL https://raw.githubusercontent.com/DexterInd/script_tools/$selectedbranch/install_script_tools.sh > $PIHOME/.tmp_script_tools.sh
+  echo "Installing script_tools. This might take a while.."
+  bash $PIHOME/.tmp_script_tools.sh $selectedbranch > /dev/null
+  ret_val=$?
+  rm $PIHOME/.tmp_script_tools.sh
+  if [[ $ret_val -ne 0 ]]; then
+    echo "script_tools failed installing with exit code $ret_val. Exiting."
+    exit 5
+  fi
+  # needs to be sourced from here when we call this as a standalone
+  source $DEXTERSCRIPT/functions_library.sh
+  feedback "Done installing script_tools"
 }
 
 
@@ -246,7 +261,7 @@ install_guis() {
 check_if_run_with_pi
 parse_cmdline_arguments "$@"
 update_install_aptget
-clone_rfrtools
+clone_rfrtools_and_install_script_tools
 install_remove_python_packages
 install_guis
 
