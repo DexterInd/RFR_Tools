@@ -172,7 +172,7 @@ clone_rfrtools_and_install_script_tools(){
   rm $PIHOME/.tmp_script_tools.sh
   if [[ $ret_val -ne 0 ]]; then
     echo "script_tools failed installing with exit code $ret_val. Exiting."
-    exit 6
+    exit 5
   fi
   # needs to be sourced from here when we call this as a standalone
   source $DEXTERSCRIPT/functions_library.sh
