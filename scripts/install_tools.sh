@@ -8,7 +8,7 @@ DEXTER_PATH=$PIHOME/$DEXTER
 DEXTER_LIB=$DEXTER_PATH/$LIB/$DEXTER
 DEXTERSCRIPT=$DEXTER_LIB/script_tools
 RFRTOOLS=$DEXTER_LIB/RFR_Tools
-REPO_PACKAGE=auto_detect_rpi
+REPO_PACKAGE=auto_detect_robot
 OS_CODENAME=$(lsb_release --codename --short)
 
 ################################################
@@ -167,7 +167,7 @@ clone_rfrtools_and_install_script_tools(){
   # update script_tools first
   curl --silent -kL https://raw.githubusercontent.com/DexterInd/script_tools/$selectedbranch/install_script_tools.sh > $PIHOME/.tmp_script_tools.sh
   echo "Installing script_tools. This might take a while.."
-  bash $PIHOME/.tmp_script_tools.sh $selectedbranch > /dev/null
+  bash $PIHOME/.tmp_script_tools.sh $selectedbranch --install-rpi-detector > /dev/null
   ret_val=$?
   rm $PIHOME/.tmp_script_tools.sh
   if [[ $ret_val -ne 0 ]]; then
