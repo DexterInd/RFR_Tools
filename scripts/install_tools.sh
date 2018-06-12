@@ -8,7 +8,7 @@ DEXTER_PATH=$PIHOME/$DEXTER
 DEXTER_LIB=$DEXTER_PATH/$LIB/$DEXTER
 DEXTERSCRIPT=$DEXTER_LIB/script_tools
 RFRTOOLS=$DEXTER_LIB/RFR_Tools
-REPO_PACKAGE=auto_detect_rpi
+REPO_PACKAGE=auto_detect_robot
 OS_CODENAME=$(lsb_release --codename --short)
 
 ################################################

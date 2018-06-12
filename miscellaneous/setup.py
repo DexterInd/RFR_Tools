@@ -27,6 +27,6 @@ setuptools.setup(
 	description="Dexter Industries Robot Autodetection and I2C Mutex Security",
 	author="Dexter Industries",
 	url="http://www.dexterindustries.com/GoPiGo/",
-	py_modules=['auto_detect_robot', 'auto_detect_rpi', 'I2C_mutex'],
+	py_modules=['auto_detect_robot', 'I2C_mutex'],
 	install_requires=['smbus-cffi', 'pyserial'],
 )
