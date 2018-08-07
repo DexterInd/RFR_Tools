@@ -39,6 +39,10 @@ parse_cmdline_arguments() {
   updatedebs=false
   installdebs=false
 
+  # the following option is not a dependent
+  # and if installdebs is not enabled then this one cannot be enabled
+  installgui=false
+
   # the following option tells which branch has to be used
   selectedbranch="master" # set to master by default
 
@@ -66,6 +70,9 @@ parse_cmdline_arguments() {
         ;;
       --use-python3-exe-too)
         usepython3exec=true
+        ;;
+      --install-gui)
+        installgui=true
         ;;
       develop|feature/*|hotfix/*|fix/*|DexterOS*|v*)
         selectedbranch="$i"
@@ -246,13 +253,15 @@ install_remove_python_packages() {
 }
 
 install_guis() {
-    pushd $RFRTOOLS/advanced_communication_options >/dev/null
-    bash install.sh
-    cd ../Scratch_GUI
-    bash install.sh
-    cd ../Troubleshooting_GUI
-    bash install.sh
-    popd > /dev/null
+    if [[ $installgui = "true" ]]; then
+      pushd $RFRTOOLS/advanced_communication_options >/dev/null
+      bash install.sh
+      cd ../Scratch_GUI
+      bash install.sh
+      cd ../Troubleshooting_GUI
+      bash install.sh
+      popd > /dev/null
+    fi
 }
 ################################################
 ############ Calling All Functions  ############
