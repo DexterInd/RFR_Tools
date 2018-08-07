@@ -105,6 +105,7 @@ parse_cmdline_arguments() {
   echo "  --use-python3-exe-too=$usepython3exec"
   echo "  --update-aptget=$updatedebs"
   echo "  --install-deb-deps=$installdebs"
+  echo "  --install-gui=$installgui"
 
   # create folders recursively if they don't exist already
   # can't use <<functions_library.sh>> here because there's no
