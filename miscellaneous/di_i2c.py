@@ -374,9 +374,6 @@ class DI_I2C(object):
         return self.transfer(outArr, len)
 
 
-# for RPI bus 1 SW I2C
-## pip install wiringpi
-#import wiringpi
 import RPi.GPIO as GPIO
 import atexit
 
