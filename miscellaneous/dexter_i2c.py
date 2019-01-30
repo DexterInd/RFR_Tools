@@ -124,7 +124,12 @@ class Dexter_I2C(object):
         for b in range(len(outArr)):
             outArr[b] &= 0xFF
 
+        # type cast to int to ensure compatibility
+        inBytes = int(inBytes)
+
         self.mutex.acquire() # acquire the bus mutex
+
+        return_val = None
 
         try:
             if self.bus_name == "RPI_1":
@@ -134,9 +139,9 @@ class Dexter_I2C(object):
                     elif(len(outArr) == 1 and inBytes == 0):
                         self.i2c_bus.i2c_write_byte(self.i2c_bus_handle, outArr[0])
                     elif(len(outArr) == 1 and inBytes >= 1):
-                        return self.i2c_bus.i2c_read_i2c_block_data(self.i2c_bus_handle, outArr[0], inBytes)
+                        return_val = self.i2c_bus.i2c_read_i2c_block_data(self.i2c_bus_handle, outArr[0], inBytes)
                     elif(len(outArr) == 0 and inBytes >= 1):
-                        return self.i2c_bus.i2c_read_byte(self.i2c_bus_handle)
+                        return_val = self.i2c_bus.i2c_read_byte(self.i2c_bus_handle)
                     else:
                         raise IOError("I2C operation not supported")
                 elif RPI_1_Module == "smbus":
@@ -145,9 +150,9 @@ class Dexter_I2C(object):
                     elif(len(outArr) == 1 and inBytes == 0):
                         self.i2c_bus.write_byte(self.address, outArr[0])
                     elif(len(outArr) == 1 and inBytes >= 1):
-                        return self.i2c_bus.read_i2c_block_data(self.address, outArr[0], inBytes)
+                        return_val = self.i2c_bus.read_i2c_block_data(self.address, outArr[0], inBytes)
                     elif(len(outArr) == 0 and inBytes == 1):
-                        return self.i2c_bus.read_byte(self.address)
+                        return_val = self.i2c_bus.read_byte(self.address)
                     else:
                         raise IOError("I2C operation not supported")
                 elif RPI_1_Module == "periphery":
@@ -175,28 +180,28 @@ class Dexter_I2C(object):
                         r = [0 for b in range(inBytes)]
                         msg = [self.i2c_bus.Message(r, read = True)]
                         self.i2c_bus.transfer(self.address, msg)
-                        return msg[0].data
-                    return
+                        return_val = msg[0].data
 
             elif self.bus_name == "RPI_1SW":
-                return self.i2c_bus.transfer(self.address, outArr, inBytes)
+                return_val = self.i2c_bus.transfer(self.address, outArr, inBytes)
 
             elif self.bus_name == "GPG3_AD1" or self.bus_name == "GPG3_AD2":
                 try:
-                    return self.gpg3.grove_i2c_transfer(self.port, self.address, outArr, inBytes)
+                    return_val = self.gpg3.grove_i2c_transfer(self.port, self.address, outArr, inBytes)
                 except self.gopigo3_module.I2CError:
                     raise IOError("[Errno 5] Input/output error")
 
             elif self.bus_name == "BP3_1" or self.bus_name == "BP3_2" or self.bus_name == "BP3_3" or self.bus_name == "BP3_4":
                 try:
-                    return self.bp3.i2c_transfer(self.port, self.address, outArr, inBytes)
+                    return_val = self.bp3.i2c_transfer(self.port, self.address, outArr, inBytes)
                 except self.brickpi3_module.I2CError:
                     raise IOError("[Errno 5] Input/output error")
         except:
-            self.mutex.release() # release before raising the exception
-            raise # still raise the exception for user-code to deal with
+            self.mutex.release() # release the bus mutex before raising the exception
+            raise # raise the exception for user-code to deal with
 
         self.mutex.release() # release the bus mutex
+        return return_val    # return data (if read)
 
     def write_8(self, val):
         """Write an 8-bit value
@@ -423,6 +428,9 @@ class Dexter_I2C_RPI_1SW(object):
 
     def __init__(self):
         """ Initialize """
+
+        # don't complain about the pins already being in use
+        GPIO.setwarnings(False)
 
         # Set up the GPIO pins
         GPIO.setmode(GPIO.BCM) # set up the GPIO with BCM numbering
