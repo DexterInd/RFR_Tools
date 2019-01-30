@@ -1,6 +1,6 @@
 # https://www.dexterindustries.com
 #
-# Copyright (c) 2018 Dexter Industries
+# Copyright (c) 2019 Dexter Industries
 # Released under the MIT license (http://choosealicense.com/licenses/mit/).
 # For more information see https://github.com/DexterInd/DI_Sensors/blob/master/LICENSE.md
 #
@@ -10,7 +10,7 @@ from __future__ import print_function
 from __future__ import division
 
 import time
-import dexter_mutex
+import di_mutex
 
 
 # Enabling one of the communication libraries
@@ -30,7 +30,7 @@ else:
     raise IOError("RPI_1 module not supported")
 
 
-class Dexter_I2C(object):
+class DI_I2C(object):
     """ Dexter Industries I2C drivers for hardware and software I2C busses """
 
     def __init__(self, bus, address, big_endian = True):
@@ -59,7 +59,7 @@ class Dexter_I2C(object):
                 self.i2c_bus = I2C("/dev/i2c-1")
         elif bus == "RPI_1SW":
             self.bus_name = bus
-            self.i2c_bus = Dexter_I2C_RPI_1SW()
+            self.i2c_bus = DI_I2C_RPI_SW()
         elif bus == "GPG3_AD1" or bus == "GPG3_AD2":
             self.bus_name = bus
 
@@ -89,7 +89,7 @@ class Dexter_I2C(object):
         else:
             raise IOError("I2C bus not supported")
 
-        self.mutex = dexter_mutex.Dexter_Mutex(name = ("I2C_Bus_" + bus))
+        self.mutex = di_mutex.DI_Mutex(name = ("I2C_Bus_" + bus))
         self.set_address(address)
         self.big_endian = big_endian
 
@@ -381,7 +381,7 @@ import RPi.GPIO as GPIO
 import atexit
 
 
-class Dexter_I2C_RPI_1SW(object):
+class DI_I2C_RPI_SW(object):
     """Dexter Industries I2C bit-bang drivers for the Raspberry Pi"""
 
     '''

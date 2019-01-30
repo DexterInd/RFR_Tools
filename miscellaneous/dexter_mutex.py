@@ -1,6 +1,6 @@
 # https://www.dexterindustries.com
 #
-# Copyright (c) 2018 Dexter Industries
+# Copyright (c) 2019 Dexter Industries
 # Released under the MIT license (http://choosealicense.com/licenses/mit/).
 # For more information see https://github.com/DexterInd/DI_Sensors/blob/master/LICENSE.md
 #
@@ -16,13 +16,13 @@ import os
 import atexit
 
 
-class Dexter_Mutex(object):
+class DI_Mutex(object):
     """ Dexter Industries mutex """
 
     def __init__(self, name, loop_time = 0.0001):
         """ Initialize """
 
-        self.Filename = "/run/lock/Dexter_Mutex_" + name
+        self.Filename = "/run/lock/DI_Mutex_" + name
         self.LoopTime = loop_time
         self.Handle = None
 
