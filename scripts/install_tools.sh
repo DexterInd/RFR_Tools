@@ -39,6 +39,10 @@ parse_cmdline_arguments() {
   updatedebs=false
   installdebs=false
 
+  # the following option is not a dependent
+  # and if installdebs is not enabled then this one cannot be enabled
+  installgui=false
+
   # the following option tells which branch has to be used
   selectedbranch="master" # set to master by default
 
@@ -66,6 +70,9 @@ parse_cmdline_arguments() {
         ;;
       --use-python3-exe-too)
         usepython3exec=true
+        ;;
+      --install-gui)
+        installgui=true
         ;;
       develop|feature/*|hotfix/*|fix/*|DexterOS*|v*)
         selectedbranch="$i"
@@ -98,6 +105,7 @@ parse_cmdline_arguments() {
   echo "  --use-python3-exe-too=$usepython3exec"
   echo "  --update-aptget=$updatedebs"
   echo "  --install-deb-deps=$installdebs"
+  echo "  --install-gui=$installgui"
 
   # create folders recursively if they don't exist already
   # can't use <<functions_library.sh>> here because there's no
@@ -135,7 +143,7 @@ update_install_aptget() {
   fi
   [[ $installdebs = "true" ]] && \
     echo "Installing debian dependencies within RFR_Tools. This might take a while.." && \
-    sudo apt-get install -y git \
+    sudo apt-get install -y --no-install-recommends git \
                          build-essential \
                          libi2c-dev \
                          i2c-tools \
@@ -246,13 +254,15 @@ install_remove_python_packages() {
 }
 
 install_guis() {
-    pushd $RFRTOOLS/advanced_communication_options >/dev/null
-    bash install.sh
-    cd ../Scratch_GUI
-    bash install.sh
-    cd ../Troubleshooting_GUI
-    bash install.sh
-    popd > /dev/null
+    if [[ $installgui = "true" ]]; then
+      pushd $RFRTOOLS/advanced_communication_options >/dev/null
+      bash install.sh
+      cd ../Scratch_GUI
+      bash install.sh
+      cd ../Troubleshooting_GUI
+      bash install.sh
+      popd > /dev/null
+    fi
 }
 ################################################
 ############ Calling All Functions  ############

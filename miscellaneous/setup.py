@@ -23,7 +23,7 @@ IF CHANGES ARE NEEDED EDIT THE ONE IN RfR THEN PULL IT HERE
 '''
 import setuptools
 setuptools.setup(
-	name="Dexter AutoDetection and I2C Mutex",
+	name="Dexter_AutoDetection_and_I2C_Mutex",
 	description="Dexter Industries Robot Autodetection and I2C Mutex Security",
 	author="Dexter Industries",
 	url="http://www.dexterindustries.com/GoPiGo/",

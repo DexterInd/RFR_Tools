@@ -25,6 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
 
+# For every change brought to this file, don't forget to update its counterpart in DexterOS.
+
 # RPI_VARIANTS was inspired from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
 # This module is meant for retrieving the Raspberry Pi's generation model, PCB model (dimension-wise) and PCB revision
 # Works with Python 3 & 2 !!!
@@ -74,6 +76,7 @@ RPI_VARIANTS = {
 "a02082" : ["Pi 3 Model B", "RPI3"],
 "a22082" : ["Pi 3 Model B", "RPI3"],
 "a020d3" : ["Pi 3 Model B+", "RPI3B+"],
+"9020e0" : ["Pi 3 Model A+", "RPI3A+"]
 }
 
 # represents indexes for each corresponding key in the above dictionary
