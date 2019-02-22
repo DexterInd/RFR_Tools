@@ -425,8 +425,6 @@ class DI_I2C_RPI_SW(object):
     ERROR_CLOCK_STRETCH_TIMEOUT = 2
     ERROR_DATA_STRETCH_TIMEOUT  = 3
     ERROR_DATA_AND_CLOCK_STRETCH_TIMEOUT  = 4
-    
-    BusActive = False
 
     INPUT = 0
     OUTPUT = 1
@@ -434,10 +432,11 @@ class DI_I2C_RPI_SW(object):
     # timeout if stretched for more than this long (in seconds)
     STRETCH_TIMEOUT = 0.001
 
+    BusActive = False
+
     def __init__(self):
         """ Initialize """
 
-        # Set up the GPIO pins
         # set up the GPIO with BCM numbering
         wp.wiringPiSetupGpio()
 
@@ -445,7 +444,7 @@ class DI_I2C_RPI_SW(object):
         atexit.register(self.__exit_cleanup__) # register the exit method
 
     def __set_gpio_pins__(self):
-        """ Set GPIO pins as INPUT """
+        """ Set pins as GPIO """
 
         self.BusActive = True
         wp.pinMode(3, self.INPUT) # set SCL pin as input
