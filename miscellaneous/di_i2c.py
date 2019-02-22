@@ -11,6 +11,7 @@ from __future__ import division
 
 import time
 import di_mutex
+import subprocess
 
 
 # Enabling one of the communication libraries
@@ -431,13 +432,24 @@ class DI_I2C_RPI_SW(object):
 
         # Set up the GPIO pins
         GPIO.setmode(GPIO.BCM) # set up the GPIO with BCM numbering
-        GPIO.setup(3, GPIO.IN) # set SCL pin as input
-        GPIO.setup(2, GPIO.IN) # set SDA pin as input
+        self.__set_gpio_pins__() # set GPIO pins as input
 
         self.BusActive = False
 
         # Register the exit method
         atexit.register(self.__exit_cleanup__) # register the exit method
+
+    def __set_gpio_pins__(self):
+        """ Set GPIO pins as INPUT """
+
+        GPIO.setup(3, GPIO.IN) # set SCL pin as input
+        GPIO.setup(2, GPIO.IN) # set SDA pin as input
+
+    def __restore_pin_state(self):
+        """ Restore I2C functionality on GPIO pins 2 & 3 """
+
+        subprocess.call("gpio mode 2 ALT0", shell=True)
+        subprocess.call("gpio mode 3 ALT0", shell=True)
 
     def __exit_cleanup__(self):
         """ Called at exit to clean up """
@@ -454,18 +466,23 @@ class DI_I2C_RPI_SW(object):
 
         if(len(outArr) > 0): # bytes to write?
             self.BusActive = True
+            self.__set_gpio_pins__()
             if self.__write__(addr, outArr, inBytes) != self.SUCCESS:
+                self.__restore_pin_state()
                 self.BusActive = False
                 raise IOError("[Errno 5] Input/output error")
 
         if(inBytes > 0): # read bytes?
             self.BusActive = True
+            self.__set_gpio_pins__()
             result, value = self.__read__(addr, inBytes)
+            self.__restore_pin_state()
             self.BusActive = False
             if result != self.SUCCESS:
                 raise IOError("[Errno 5] Input/output error")
             return value
         else:
+            self.__restore_pin_state()
             self.BusActive = False
 
     def __delay__(self):
