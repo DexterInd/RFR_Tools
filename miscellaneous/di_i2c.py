@@ -452,18 +452,18 @@ class DI_I2C_RPI_SW(object):
         wp.pinMode(2, self.INPUT) # set SDA pin as input
 
     def __restore_gpio_pins__(self):
-        """ Restore I2C functionality on GPIO pins 2 & 3 """
+        """ Restore HW I2C functionality on GPIO pins 2 & 3 """
 
         # subprocess.call("gpio -g mode 2 ALT0 && gpio -g mode 3 ALT0", shell=True)
-        wp.pinModeAlt(2, 4)
-        wp.pinModeAlt(3, 4)
+        wp.pinModeAlt(3, 4) # restore ALT0 functionality on SCL pin
+        wp.pinModeAlt(2, 4) # restore ALT0 functionality on SDA pin
         self.BusActive = False
 
     def __exit_cleanup__(self):
         """ Called at exit to clean up """
         
         if self.BusActive:
-            self.__restore_pin_state__()
+            self.__restore_gpio_pins__()
 
     def transfer(self, addr, outArr, inBytes):
         """ Write and/or read I2C """
