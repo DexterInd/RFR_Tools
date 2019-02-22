@@ -451,7 +451,7 @@ class DI_I2C_RPI_SW(object):
         wp.pinMode(3, self.INPUT) # set SCL pin as input
         wp.pinMode(2, self.INPUT) # set SDA pin as input
 
-    def __restore_gpio_state__(self):
+    def __restore_gpio_pins__(self):
         """ Restore I2C functionality on GPIO pins 2 & 3 """
 
         # subprocess.call("gpio -g mode 2 ALT0 && gpio -g mode 3 ALT0", shell=True)
@@ -472,17 +472,17 @@ class DI_I2C_RPI_SW(object):
 
         if(len(outArr) > 0): # bytes to write?
             if self.__write__(addr, outArr, inBytes) != self.SUCCESS:
-                self.__restore_gpio_state__()
+                self.__restore_gpio_pins__()
                 raise IOError("[Errno 5] Input/output error")
 
         if(inBytes > 0): # read bytes?
             result, value = self.__read__(addr, inBytes)
-            self.__restore_gpio_state__()
+            self.__restore_gpio_pins__()
             if result != self.SUCCESS:
                 raise IOError("[Errno 5] Input/output error")
             return value
         else:
-            self.__restore_gpio_state__()
+            self.__restore_gpio_pins__()
 
     def __delay__(self):
         """ Delay called for slowing down the I2C clock to around 100kbps """
