@@ -376,6 +376,8 @@ class DI_I2C(object):
 
 
 import RPi.GPIO as GPIO
+import subprocess
+import shlex
 import atexit
 
 
@@ -447,8 +449,7 @@ class DI_I2C_RPI_SW(object):
     def __restore_pin_state__(self):
         """ Restore I2C functionality on GPIO pins 2 & 3 """
 
-        subprocess.call("gpio -g mode 2 ALT0", shell=True)
-        subprocess.call("gpio -g mode 3 ALT0", shell=True)
+        subprocess.call("gpio -g mode 2 ALT0 && gpio -g mode 3 ALT0", shell=True)
 
     def __exit_cleanup__(self):
         """ Called at exit to clean up """
