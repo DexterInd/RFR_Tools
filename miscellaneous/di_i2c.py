@@ -376,8 +376,7 @@ class DI_I2C(object):
 
 
 import RPi.GPIO as GPIO
-import subprocess
-import shlex
+import wiringpi as wp
 import atexit
 
 
@@ -415,6 +414,10 @@ class DI_I2C_RPI_SW(object):
         wiringpi.pinMode(8, 1) # SDA Low
         wiringpi.digitalRead(9) # SCL Read
         wiringpi.digitalRead(8) # SDA Read
+
+        # if you want to go with the BCM notation
+        # call wiringpi.wiringPiSetupGpio() and then
+        # use pins 2 & 3 instead of 8 & 9
     '''
 
     SUCCESS = 0
@@ -422,6 +425,11 @@ class DI_I2C_RPI_SW(object):
     ERROR_CLOCK_STRETCH_TIMEOUT = 2
     ERROR_DATA_STRETCH_TIMEOUT  = 3
     ERROR_DATA_AND_CLOCK_STRETCH_TIMEOUT  = 4
+    
+    BusActive = False
+
+    INPUT = 0
+    OUTPUT = 1
 
     # timeout if stretched for more than this long (in seconds)
     STRETCH_TIMEOUT = 0.001
@@ -429,13 +437,9 @@ class DI_I2C_RPI_SW(object):
     def __init__(self):
         """ Initialize """
 
-        # don't complain about the pins already being in use
-        GPIO.setwarnings(False)
-
         # Set up the GPIO pins
-        GPIO.setmode(GPIO.BCM) # set up the GPIO with BCM numbering
-
-        self.BusActive = False
+        # set up the GPIO with BCM numbering
+        wp.wiringPiSetupGpio()
 
         # Register the exit method
         atexit.register(self.__exit_cleanup__) # register the exit method
@@ -443,46 +447,42 @@ class DI_I2C_RPI_SW(object):
     def __set_gpio_pins__(self):
         """ Set GPIO pins as INPUT """
 
-        GPIO.setup(3, GPIO.IN) # set SCL pin as input
-        GPIO.setup(2, GPIO.IN) # set SDA pin as input
+        self.BusActive = True
+        wp.pinMode(3, self.INPUT) # set SCL pin as input
+        wp.pinMode(2, self.INPUT) # set SDA pin as input
 
-    def __restore_pin_state__(self):
+    def __restore_gpio_state__(self):
         """ Restore I2C functionality on GPIO pins 2 & 3 """
 
-        subprocess.call("gpio -g mode 2 ALT0 && gpio -g mode 3 ALT0", shell=True)
+        # subprocess.call("gpio -g mode 2 ALT0 && gpio -g mode 3 ALT0", shell=True)
+        wp.pinModeAlt(2, 4)
+        wp.pinModeAlt(3, 4)
+        self.BusActive = False
 
     def __exit_cleanup__(self):
         """ Called at exit to clean up """
-
+        
         if self.BusActive:
-            # restore pins' states
             self.__restore_pin_state__()
-
-        self.BusActive = False
 
     def transfer(self, addr, outArr, inBytes):
         """ Write and/or read I2C """
 
+        self.__set_gpio_pins__()
+
         if(len(outArr) > 0): # bytes to write?
-            self.BusActive = True
-            self.__set_gpio_pins__()
             if self.__write__(addr, outArr, inBytes) != self.SUCCESS:
-                self.__restore_pin_state__()
-                self.BusActive = False
+                self.__restore_gpio_state__()
                 raise IOError("[Errno 5] Input/output error")
 
         if(inBytes > 0): # read bytes?
-            self.BusActive = True
-            self.__set_gpio_pins__()
             result, value = self.__read__(addr, inBytes)
-            self.__restore_pin_state__()
-            self.BusActive = False
+            self.__restore_gpio_state__()
             if result != self.SUCCESS:
                 raise IOError("[Errno 5] Input/output error")
             return value
         else:
-            self.__restore_pin_state__()
-            self.BusActive = False
+            self.__restore_gpio_state__()
 
     def __delay__(self):
         """ Delay called for slowing down the I2C clock to around 100kbps """
@@ -498,8 +498,8 @@ class DI_I2C_RPI_SW(object):
     def __scl_high_check__(self):
         """ Allow SCL to go high, and wait until it's high. Timeout. """
 
-        GPIO.setup(3, GPIO.IN) # SCL High
-        if not GPIO.input(3): # SCL Read
+        wp.pinMode(3, self.INPUT) # SCL High
+        if not wp.digitalRead(3): # SCL Read
             return self.__scl_check_timeout__()
         return self.SUCCESS
 
@@ -507,7 +507,7 @@ class DI_I2C_RPI_SW(object):
         """ Wait until SCL is high, and timeout if it takes too long """
 
         time_start = time.time()
-        while not GPIO.input(3): # SCL Read
+        while not wp.digitalRead(3): # SCL Read
             if (time.time() - time_start) > self.STRETCH_TIMEOUT:
                 return self.ERROR_CLOCK_STRETCH_TIMEOUT # timeout waiting for SCL to go high
         #self.__delay__() # SCL is already high, just make sure it's high enough
@@ -516,10 +516,10 @@ class DI_I2C_RPI_SW(object):
     def __sda_high_check__(self):
         """ Allow SDA to go high, and wait until it's high """
 
-        GPIO.setup(2, GPIO.IN) # SDA High
+        wp.pinMode(2, self.INPUT) # SDA High
         result = 0
         time_start = time.time()
-        while not GPIO.input(2): # SDA Read
+        while not wp.digitalRead(2): # SDA Read
             if time.time() - time_start > self.STRETCH_TIMEOUT:
                 return self.ERROR_DATA_STRETCH_TIMEOUT # timeout waiting for SDA to go high
         #self.__delay__() # SDA is already high, just make sure it's high enough
@@ -537,8 +537,8 @@ class DI_I2C_RPI_SW(object):
                 if result == self.ERROR_NACK: # if NACK
                     self.__stop__()
                 else: # other error. Probably ERROR_CLOCK_STRETCH_TIMEOUT
-                    GPIO.setup(3, GPIO.IN) # SCL High
-                    GPIO.setup(2, GPIO.IN) # SDA High
+                    wp.pinMode(3, self.INPUT) # SCL High
+                    wp.pinMode(2, self.INPUT) # SDA High
                 return result # return error
         if restart: # if a read is immediately following, issue a restart
             # SDA high then SCL high, with provisions for timeout
@@ -566,15 +566,15 @@ class DI_I2C_RPI_SW(object):
             if result == self.ERROR_NACK: # if NACK
                 self.__stop__()
             else: # other error. Probably ERROR_CLOCK_STRETCH_TIMEOUT
-                GPIO.setup(3, GPIO.IN) # SCL High
-                GPIO.setup(2, GPIO.IN) # SDA High
+                wp.pinMode(3, self.INPUT) # SCL High
+                wp.pinMode(2, self.INPUT) # SDA High
             return result, inBuffer
 
         for b in range(inBytes): # for each byte to read
             result, value = self.__read_byte__((inBytes - 1) - b) # read a byte, and ack all except the last
             if result != self.SUCCESS: # check for error
-                GPIO.setup(3, GPIO.IN) # SCL High
-                GPIO.setup(2, GPIO.IN) # SDA High
+                wp.pinMode(3, self.INPUT) # SCL High
+                wp.pinMode(2, self.INPUT) # SDA High
                 return result, inBuffer # return error
             inBuffer.append(value) # append the read byte to inBuffer
 
@@ -584,13 +584,13 @@ class DI_I2C_RPI_SW(object):
     def __start__(self):
         """ Issue bus start sequence """
 
-        GPIO.setup(2, GPIO.OUT) # SDA Low
+        wp.pinMode(2, self.OUTPUT) # SDA Low
         self.__delay__()
 
     def __stop__(self):
         """ Issue bus stop sequence """
 
-        GPIO.setup(2, GPIO.OUT) # SDA Low
+        wp.pinMode(2, self.OUTPUT) # SDA Low
         self.__delay__()
 
         # SCL high then SDA high, with provisions for timeout
@@ -607,50 +607,50 @@ class DI_I2C_RPI_SW(object):
         """ Write a byte """
 
         for b in range(8):
-            GPIO.setup(3, GPIO.OUT) # SCL Low
+            wp.pinMode(3, self.OUTPUT) # SCL Low
             if (0x80 >> b) & val:
-                GPIO.setup(2, GPIO.IN) # SDA High
+                wp.pinMode(2, self.INPUT) # SDA High
             else:
-                GPIO.setup(2, GPIO.OUT) # SDA Low
+                wp.pinMode(2, self.OUTPUT) # SDA Low
             #self.__delay__()
-            GPIO.setup(3, GPIO.IN) # SCL High
-            if not GPIO.input(3): # SCL Read
+            wp.pinMode(3, self.INPUT) # SCL High
+            if not wp.digitalRead(3): # SCL Read
                 if self.__scl_check_timeout__():
                     return self.ERROR_CLOCK_STRETCH_TIMEOUT
             #self.__delay__()
-        GPIO.setup(3, GPIO.OUT) # SCL Low
-        GPIO.setup(2, GPIO.IN) # SDA High
+        wp.pinMode(3, self.OUTPUT) # SCL Low
+        wp.pinMode(2, self.INPUT) # SDA High
         self.__delay__()
         if self.__scl_high_check__():
             return self.ERROR_CLOCK_STRETCH_TIMEOUT
 
         result = self.SUCCESS
-        if GPIO.input(2): # SDA Read. check for ACK
+        if wp.digitalRead(2): # SDA Read. check for ACK
             result = self.ERROR_NACK
-        GPIO.setup(3, GPIO.OUT) # SCL Low
+        wp.pinMode(3, self.OUTPUT) # SCL Low
         return result
 
     def __read_byte__(self, ack):
         """ Read a byte """
 
-        GPIO.setup(2, GPIO.IN) # SDA High
+        wp.pinMode(2, self.INPUT) # SDA High
         data = 0
-        GPIO.setup(3, GPIO.OUT) # SCL Low
+        wp.pinMode(3, self.OUTPUT) # SCL Low
         for b in range(8):
             self.__delay__()
-            GPIO.setup(3, GPIO.IN) # SCL High
-            if not GPIO.input(3): # SCL Read
+            wp.pinMode(3, self.INPUT) # SCL High
+            if not wp.digitalRead(3): # SCL Read
                 if self.__scl_check_timeout__():
                     return self.ERROR_CLOCK_STRETCH_TIMEOUT
-            if GPIO.input(2): # SDA Read
+            if wp.digitalRead(2): # SDA Read
                 data |= (0x80 >> b)
             #self.__delay__()
-            GPIO.setup(3, GPIO.OUT) # SCL Low
+            wp.pinMode(3, self.OUTPUT) # SCL Low
         if ack != 0: # send ack?
-            GPIO.setup(2, GPIO.OUT) # SDA Low
+            wp.pinMode(2, self.OUTPUT) # SDA Low
         else:
             self.__delay__()
         if self.__scl_high_check__():
             return self.ERROR_CLOCK_STRETCH_TIMEOUT, 0
-        GPIO.setup(3, GPIO.OUT) # SCL Low
+        wp.pinMode(3, self.OUTPUT) # SCL Low
         return self.SUCCESS, data
