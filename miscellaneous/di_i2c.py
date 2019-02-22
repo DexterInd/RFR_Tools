@@ -432,7 +432,6 @@ class DI_I2C_RPI_SW(object):
 
         # Set up the GPIO pins
         GPIO.setmode(GPIO.BCM) # set up the GPIO with BCM numbering
-        self.__set_gpio_pins__() # set GPIO pins as input
 
         self.BusActive = False
 
@@ -445,19 +444,18 @@ class DI_I2C_RPI_SW(object):
         GPIO.setup(3, GPIO.IN) # set SCL pin as input
         GPIO.setup(2, GPIO.IN) # set SDA pin as input
 
-    def __restore_pin_state(self):
+    def __restore_pin_state__(self):
         """ Restore I2C functionality on GPIO pins 2 & 3 """
 
-        subprocess.call("gpio mode 2 ALT0", shell=True)
-        subprocess.call("gpio mode 3 ALT0", shell=True)
+        subprocess.call("gpio -g mode 2 ALT0", shell=True)
+        subprocess.call("gpio -g mode 3 ALT0", shell=True)
 
     def __exit_cleanup__(self):
         """ Called at exit to clean up """
 
         if self.BusActive:
-            # Set GPIOs as inputs
-            GPIO.setup(3, GPIO.IN) # set SCL pin as input
-            GPIO.setup(2, GPIO.IN) # set SDA pin as input
+            # restore pins' states
+            self.__restore_pin_state__()
 
         self.BusActive = False
 
@@ -468,7 +466,7 @@ class DI_I2C_RPI_SW(object):
             self.BusActive = True
             self.__set_gpio_pins__()
             if self.__write__(addr, outArr, inBytes) != self.SUCCESS:
-                self.__restore_pin_state()
+                self.__restore_pin_state__()
                 self.BusActive = False
                 raise IOError("[Errno 5] Input/output error")
 
@@ -476,13 +474,13 @@ class DI_I2C_RPI_SW(object):
             self.BusActive = True
             self.__set_gpio_pins__()
             result, value = self.__read__(addr, inBytes)
-            self.__restore_pin_state()
+            self.__restore_pin_state__()
             self.BusActive = False
             if result != self.SUCCESS:
                 raise IOError("[Errno 5] Input/output error")
             return value
         else:
-            self.__restore_pin_state()
+            self.__restore_pin_state__()
             self.BusActive = False
 
     def __delay__(self):
