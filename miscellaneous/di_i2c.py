@@ -374,8 +374,6 @@ class DI_I2C(object):
             outArr = []
         return self.transfer(outArr, len)
 
-
-import RPi.GPIO as GPIO
 import wiringpi as wp
 import atexit
 
