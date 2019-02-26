@@ -401,8 +401,8 @@ class DI_I2C_RPI_SW(object):
         wiringpi.wiringPiSetupGpio()
         wiringpi.pinMode(2, 0) # set SDA pin as input
         wiringpi.pinMode(3, 0) # set SCL pin as input
-        wiringpi.digitalWrite(8, 0)
-        wiringpi.digitalWrite(9, 0)
+        wiringpi.digitalWrite(2, 0)
+        wiringpi.digitalWrite(3, 0)
 
         wiringpi.pinMode(3, 0) # SCL High
         wiringpi.pinMode(3, 1) # SCL Low
