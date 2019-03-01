@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 # RPI_VARIANTS was inspired from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
 # This module is meant for retrieving the Raspberry Pi's generation model, PCB model (dimension-wise) and PCB revision
+# Also check https://elinux.org/RPi_HardwareHistory for missing revision codes.
 # Works with Python 3 & 2 !!!
 
 # Each key represents the hardware revision number
@@ -62,6 +63,8 @@ RPI_VARIANTS = {
 "0012" : ["Model A+", "RPI1"],
 "0015" : ["Model A+", "RPI1"],
 
+"a01040" : ["Pi 2 Model B v1.0", "RPI2"],
+    
 "a01041" : ["Pi 2 Model B v1.1", "RPI2"],
 "a21041" : ["Pi 2 Model B v1.1", "RPI2"],
 
@@ -75,6 +78,7 @@ RPI_VARIANTS = {
 
 "a02082" : ["Pi 3 Model B", "RPI3"],
 "a22082" : ["Pi 3 Model B", "RPI3"],
+"a32082" : ["Pi 3 Model B", "RPI3"],
 "a020d3" : ["Pi 3 Model B+", "RPI3B+"],
 "9020e0" : ["Pi 3 Model A+", "RPI3A+"]
 }
