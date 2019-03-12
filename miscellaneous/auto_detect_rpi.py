@@ -79,6 +79,7 @@ RPI_VARIANTS = {
 "a02082" : ["Pi 3 Model B", "RPI3"],
 "a22082" : ["Pi 3 Model B", "RPI3"],
 "a32082" : ["Pi 3 Model B", "RPI3"],
+"a52082" : ["Pi 3 Model B", "RPI3"],
 "a020d3" : ["Pi 3 Model B+", "RPI3B+"],
 "9020e0" : ["Pi 3 Model A+", "RPI3A+"]
 }
