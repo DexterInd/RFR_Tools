@@ -102,7 +102,7 @@ def getRPIHardwareRevCode():
         if revision in RPI_VARIANTS.keys():
             rpi_description = RPI_VARIANTS[revision][RPI_MODEL_AND_PCBREV]
         else:
-            rpi_description = "NOT_FOUND"
+            rpi_description = "NOT_FOUND_" + revision
 
     return rpi_description
 
@@ -130,7 +130,7 @@ def getRPIGenerationCode():
         if revision in RPI_VARIANTS.keys():
             rpi_description = RPI_VARIANTS[revision][RPI_GENERATION_MODEL]
         else:
-            rpi_description = "NOT_FOUND"
+            rpi_description = "NOT_FOUND_" + revision
 
     return rpi_description
 
