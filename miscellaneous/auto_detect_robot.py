@@ -8,13 +8,21 @@ THIS IS NOT A COPY OF ANOTHER FILE.
 
 import sys
 import time     # import the time library for the sleep function
-from smbus import SMBus
+
 import os
 import serial
 from shutil import copyfile
 import re
 
-bus = SMBus(1)
+# if GoPiGo3 installed as standalone on Raspbian
+# then smbus is not installed.
+# but there's no need to detect the robots that require it
+try:
+    from smbus import SMBus
+    bus = SMBus(1)
+except:
+    bus = None
+
 detected_robot = "None"
 detectable_robots = ["GoPiGo3","GoPiGo","BrickPi3","BrickPi+","GrovePi","PivotPi"]
 
@@ -235,9 +243,10 @@ def remove_symlink(src):
 
 def remove_desktop_control(file):
     try:
-        os.remove(file) # Delete the GoPiGo3 file.
+        os.remove(file) # Delete the file.
     except OSError as e:
-        print("File Not Found:" + file + "  " + str(e))
+        pass #quiet is better for the user. This error seems important
+        # print("File Not Found: " + file + "  " + str(e))
         # print(e)
 
 def remove_control_panel(detected_robot_list):
