@@ -54,18 +54,26 @@ sudo rm -f /usr/share/raspi-ui-overrides/applications/scratch.desktop
 sudo rm -f /usr/share/applications/scratch.desktop
 sudo lxpanelctl restart
 # Make shortcut executable
-sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop							# Desktop shortcut permissions.
 
-# sudo rm /usr/share/applications/scratch.desktop															# Remove the Scratch Start button in the Menu
+# Desktop shortcut permissions.
+sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop							
+# Remove the Scratch Start button in the Menu
+# sudo rm /usr/share/applications/scratch.desktop
 
 ######
 # Added these to solve the menu problem of scratch.  Then removed them.  
 # These are removed for now, the call up the Scratch Gui, not the scratch start.
-# sudo rm /usr/share/raspi-ui-overrides/applications/scratch.desktop					# Remove the Scratch Start button in the Menu
-# sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/applications/scratch.desktop						# Copy the Scratch_Start to the Menu
-# sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/raspi-ui-overrides/applications/scratch.desktop		# Copy the Scratch_Start to the Menu
-# sudo chmod 777 /usr/share/applications/scratch.desktop							# Menu Shortcut Permissions.
-# sudo chmod 777 /usr/share/raspi-ui-overrides/applications/scratch.desktop		# Menu Shortcut Permissions.
+# Desktop shortcut permissions.
+# sudo rm /usr/share/raspi-ui-overrides/applications/scratch.desktop
+# Remove the Scratch Start button in the Menu
+# Copy the Scratch_Start to the Menu
+# sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/applications/scratch.desktop
+# Copy the Scratch_Start to the Menu
+# sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/raspi-ui-overrides/applications/scratch.desktop	
+# Menu Shortcut Permissions.
+# sudo chmod 777 /usr/share/applications/scratch.desktop							
+# Menu Shortcut Permissions.
+# sudo chmod 777 /usr/share/raspi-ui-overrides/applications/scratch.desktop		
 
 # # Make run_scratch_gui executable.
 sudo chmod +x $FINAL_SCRATCH_PATH/Scratch_Start.sh
@@ -136,6 +144,7 @@ if [ $VERSION -eq '8' ] ; then
     echo "remoteconnectiondialog = 0" > /home/pi/.scratch.ini
 elif [ $VERSION -eq '9' ] ; then
     # associate Scratch file to our program
+    sudo apt-get install nuscratch
     cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
 fi
 
