@@ -39,4 +39,4 @@ sudo chmod +x /home/pi/Desktop/Troubleshooting_Start.desktop
 
 delete_folder /home/pi/GoBox/Troubleshooting
 
-feedback "Done with TRoubleshooting"
+feedback "Done with Troubleshooting"
