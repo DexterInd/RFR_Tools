@@ -123,6 +123,9 @@ def getRPIGenerationCode():
     "RPI1"
     "RPi2"
     "RPI3"
+    "RPI3B+"
+    "RPI3A+"
+    "RPI4"
     "RPI-COMPUTE-MODULE"
     """
 
