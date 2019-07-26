@@ -125,9 +125,13 @@ VERSION=$(sed 's/\..*//' /etc/debian_version)
 echo "Version: $VERSION"
 
 # fix espeak
+# 1. set audio to the audio jack
 amixer cset numid=3 1
+# 2. set volume to 100%
 sudo amixer set PCM -- 100%
+# 3. remove current espeak
 sudo apt-get remove -y espeak
+# 4. reinstall espeak and helpers
 sudo apt install -y espeak python3-espeak speech-dispatcher-espeak
 
 
