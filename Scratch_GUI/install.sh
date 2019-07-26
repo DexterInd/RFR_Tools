@@ -124,6 +124,18 @@ sudo ln -s /home/pi/Dexter/PivotPi/Software/Scratch/Examples /usr/share/scratch/
 VERSION=$(sed 's/\..*//' /etc/debian_version)
 echo "Version: $VERSION"
 
+# fix espeak
+# 1. set audio to the audio jack
+amixer cset numid=3 1
+# 2. set volume to 100%
+sudo amixer set PCM -- 100%
+# 3. remove current espeak
+sudo apt-get remove -y espeak
+# 4. reinstall espeak and helpers
+sudo apt install -y espeak python3-espeak speech-dispatcher-espeak
+
+
+
 if [ $VERSION -eq '8' ] ; then
     # Make sure that Scratch always starts Scratch GUI
     # We'll install these parts to make sure that if a user double-clicks on a file on the desktop
