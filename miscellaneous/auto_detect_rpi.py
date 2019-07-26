@@ -64,7 +64,7 @@ RPI_VARIANTS = {
 "0015" : ["Model A+ v1.1", "RPI1"],
 
 "a01040" : ["Pi 2 Model B v1.0", "RPI2"],
-    
+
 "a01041" : ["Pi 2 Model B v1.1", "RPI2"],
 "a21041" : ["Pi 2 Model B v1.1", "RPI2"],
 
@@ -81,7 +81,9 @@ RPI_VARIANTS = {
 "a32082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a52082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a020d3" : ["Pi 3 Model B+ v1.3", "RPI3B+"],
-"9020e0" : ["Pi 3 Model A+ v1.0", "RPI3A+"]
+"9020e0" : ["Pi 3 Model A+ v1.0", "RPI3A+"],
+
+"a03111" : ["Pi 4 Model B", "RPI4"]
 }
 
 # represents indexes for each corresponding key in the above dictionary
@@ -121,6 +123,9 @@ def getRPIGenerationCode():
     "RPI1"
     "RPi2"
     "RPI3"
+    "RPI3B+"
+    "RPI3A+"
+    "RPI4"
     "RPI-COMPUTE-MODULE"
     """
 
