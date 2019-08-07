@@ -33,7 +33,7 @@ parse_cmdline_arguments() {
   systemwide=true
   userlocal=false
   envlocal=false
-  usepython3exec=false
+  usepython3exec=true
 
   # the following 2 options can be used together
   updatedebs=false
