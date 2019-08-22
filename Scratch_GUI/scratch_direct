@@ -71,6 +71,8 @@ elif [ $VERSION -eq '8' ]; then
 
 elif [ $VERSION -eq '9' ]; then
     echo ""
+elif [ $VERSION -eq '10' ]; then
+    echo ""
 fi
 
 #set to 1 to work around OLPC bug #8008
@@ -173,6 +175,8 @@ elif [ $VERSION -eq '9' ]; then
     echo "You have Stretch"
     echo Executing: scratch "$DOCUMENT"
     scratch "$DOCUMENT"
+elif [ $VERSION -eq '10' ]; then
+    echo "You have Buster"
+    echo Executing: scratch "$DOCUMENT"
+    scratch "$DOCUMENT"
 fi
-
-

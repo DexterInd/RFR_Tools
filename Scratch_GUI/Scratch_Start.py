@@ -39,7 +39,7 @@ def write_debug(in_string):
         error_file.write(write_string)
         error_file.close()
     except:
-        print " "
+        print(" ")
 
 def write_state(in_string):
     # in case of multiple robot detection (ie BrickPi3 & PivotPi)
@@ -103,7 +103,7 @@ def launch_all(scratch_file=SCRATCH_PATH+"new.sb"):
     start_command = "bash {0}scratch_direct {1}".format(SCRATCH_PATH, scratch_file)
     print("Launched Scratch")
     print(start_command)
-    send_bash_command_in_background(start_command)
+    
 
     user_selection = read_state()
     if user_selection.find('BrickPi') >= 0:
@@ -132,6 +132,7 @@ def launch_all(scratch_file=SCRATCH_PATH+"new.sb"):
     param.append("/usr/bin/python")
     param.append(program)
     scratch_controller = subprocess.Popen(param)
+    send_bash_command_in_background(start_command)
 
     print("Programming Started.")
 
@@ -144,42 +145,42 @@ def kill_all_open_processes():
     # print out
     for line in out.splitlines():
         if 'squeak' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'squeakvm' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'GoPiGoScratch' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'GoPiGo3Scratch' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'GrovePiScratch' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'BrickPiScratch' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'BrickPi3Scratch' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
         if 'PivotPi' in line:
-            print line
+            print (line)
             pid = int(line.split(None, 2)[1])
             kill_line = "sudo kill " + str(pid)
             send_bash_command(kill_line)
@@ -194,8 +195,8 @@ class MainPanel(wx.Panel):
 
         global robotbitmap
         wx.Panel.__init__(self, parent=parent)
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
-        self.SetBackgroundColour(wx.WHITE)
+        # self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+        self.SetBackgroundColour(wx.Colour(255,255,255))
         self.frame = parent
 
         # font = wx.Font(12, wx.DEFAULT, wx.NORMAL, wx.NORMAL, False, u'Consolas')
@@ -277,7 +278,7 @@ class MainPanel(wx.Panel):
 
         # Bind Stop Button
         stop_gopigo = wx.Button(self, label="Stop GoPiGo")
-        stop_gopigo.SetBackgroundColour('red')
+        stop_gopigo.SetForegroundColour('red')
         stop_gopigo.Bind(wx.EVT_BUTTON, self.stop_gopigo)
 
         right_buttons_sizer.Add(icon_sizer)
@@ -351,12 +352,12 @@ class MainPanel(wx.Panel):
         write_debug("robotDrop Selected.")
         controls = ['GoPiGo3', 'GrovePi', 'BrickPi', 'PivotPi', 'Just Scratch, no Robot.']	# Options for drop down.
         value = event.GetSelection()
-        print controls[value]
+        print (controls[value])
         # position = 0				# Position in the key list on file
 
         write_state(controls[value])    # print value to file.
         if(controls[value]=='Just Scratch, no Robot.'):
-            print "Just Scratch!"
+            print ("Just Scratch!")
             nobitmap = wx.Bitmap("/usr/share/scratch/Media/Costumes/Animals/cat1-a.gif")
             robotbitmap.SetBitmap(nobitmap)
             # robot = "/home/pi/Desktop/GoBox/Scratch_GUI/"+read_state()+".png"
@@ -368,12 +369,12 @@ class MainPanel(wx.Panel):
 
             # Update Picture
             try:
-                print "Read State: " + str(read_state())
+                print ("Read State: {}".format(read_state()))
                 robot = read_state()+".png"
                 newrobotbitmap = wx.Bitmap(ICON_PATH+robot,type=wx.BITMAP_TYPE_PNG)
                 robotbitmap.SetBitmap(newrobotbitmap)
             except Exception as e:
-                print "Failed robotDrop: {}.".format(e)
+                print ("Failed robotDrop: {}.".format(e))
 
     def stop_gopigo(self, event):
         write_debug("STOP robot.")
@@ -449,7 +450,7 @@ class MainPanel(wx.Panel):
             directory = "nohup pcmanfm /home/pi/Dexter/PivotPi/Software/Scratch/Examples/"
 
         send_bash_command_in_background(directory)
-        print "Opened up file manager!"
+        print ("Opened up file manager")
         write_debug("Opened up file manager!")
 
     def test(self, event):
@@ -463,24 +464,24 @@ class MainPanel(wx.Panel):
                 dlg = wx.MessageDialog(self, 'Ok, start BrickPi+ Test. Make sure the BrickPi+ is powered by batteries, a motor is connected, and a touch sensor is connected to Port 1.  You should see the LEDs blink and the motors move when the touch sensor is pressed.  Then press Ok. ', 'Test BrickPi+!', wx.OK|wx.CANCEL|wx.ICON_INFORMATION)
                 ran_dialog = False
                 if dlg.ShowModal() == wx.ID_OK:
-                    print "Run Hardware Test!"
+                    print ("Run Hardware Test!")
                     program = "sudo python /home/pi/Dexter/BrickPi+/Software/BrickPi_Python/Sensor_Examples/BrickPi_Hardware_Test.py"
                     send_bash_command_in_background(program)
                     ran_dialog = True
                 else:
-                    print "Canceled!"
+                    print ("Canceled!")
                 dlg.Destroy()
             else:
             # Run BrickPi3 Test.
                 dlg = wx.MessageDialog(self, 'Ok, start BrickPi3 Test. Make sure the BrickPi3 is powered by batteries, a motor is connected, and a touch sensor is connected to Port 1.  You should see the LEDs blink and the motors move when the touch sensor is pressed.  Then press Ok. ', 'Test BrickPi3!', wx.OK|wx.CANCEL|wx.ICON_INFORMATION)
                 ran_dialog = False
                 if dlg.ShowModal() == wx.ID_OK:
-                    print "Run Hardware Test!"
+                    print ("Run Hardware Test.")
                     program = "sudo python /home/pi/Dexter/BrickPi3/Software/Python/Sensor_Examples/Brick_Hardware_Test.py"
                     send_bash_command_in_background(program)
                     ran_dialog = True
                 else:
-                    print "Canceled!"
+                    print ("Canceled!")
                 dlg.Destroy()
 
             # Depending on what the user chose, we either cancel or complete.
@@ -497,12 +498,12 @@ class MainPanel(wx.Panel):
             dlg = wx.MessageDialog(self, 'This Demo program will make sure everything is working on your GoPiGo.  It is best to be working through wifi, but if the GoPiGo is connected to your computer with a cable right now, turn it upside down for the demo.  \n\nClick OK to begin.', 'Demonstrate the GoPiGo', wx.OK|wx.CANCEL|wx.ICON_INFORMATION)
             ran_dialog = False
             if dlg.ShowModal() == wx.ID_OK:
-                print "Begin Running GoPiGo Test!"
+                print ("Begin Running GoPiGo3 Test!")
                 program = "python /home/pi/Dexter/GoPiGo3/Software/Python/hardware_test.py"
                 send_bash_command_in_background(program)
                 ran_dialog = True
             else:
-                print "Canceled!"
+                print ("Canceled.")
             dlg.Destroy()
             pass
         elif folder.find('GoPiGo') >= 0:
@@ -510,12 +511,12 @@ class MainPanel(wx.Panel):
             dlg = wx.MessageDialog(self, 'This Demo program will make sure everything is working on your GoPiGo.  The red LEDs in the front of the GoPiGo will blink once, and the GoPiGo will move forward, and then backwards.  So make sure it is on the floor so it does not fall off the table! \n\nMake sure your batteries are connected to the GoPiGo, motors are connected, and it is turned on.  Be sure to unplug the power supply wall adapter from the GoPiGo. It is best to be working through wifi, but if the GoPiGo is connected to your computer with a cable right now, turn it upside down for the demo.  \n\nClick OK to begin.', 'Demonstrate the GoPiGo', wx.OK|wx.CANCEL|wx.ICON_INFORMATION)
             ran_dialog = False
             if dlg.ShowModal() == wx.ID_OK:
-                print "Begin Running GoPiGo Test!"
+                print ("Begin Running GoPiGo Test.")
                 program = "sudo python /home/pi/Dexter/GoPiGo/Software/Python/hardware_test_2.py"
                 send_bash_command_in_background(program)
                 ran_dialog = True
             else:
-                print "Canceled!"
+                print ("Canceled.")
             dlg.Destroy()
 
             # Depending on what the user chose, we either cancel or complete.
@@ -533,12 +534,12 @@ class MainPanel(wx.Panel):
             dlg = wx.MessageDialog(self, 'Ok, start GrovePi Test. Attach buzzer to D8 and a button to A0.  Press the button and the buzzer should sound.  Press Ok to start. ', 'Test GrovePi!', wx.OK|wx.CANCEL|wx.ICON_INFORMATION)
             ran_dialog = False
             if dlg.ShowModal() == wx.ID_OK:
-                print "Run GrovePi Test!"
+                print ("Run GrovePi Test.")
                 program = "sudo python /home/pi/Dexter/GrovePi/Software/Python/GrovePi_Hardware_Test.py"
                 send_bash_command_in_background(program)
                 ran_dialog = True
             else:
-                print "Canceled!"
+                print ("Canceled")
             dlg.Destroy()
 
             # Depending on what the user chose, we either cancel or complete.

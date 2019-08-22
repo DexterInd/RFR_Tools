@@ -134,9 +134,9 @@ update_install_aptget() {
       # add nodejs to apt-get source list
       sudo sh -c "echo 'deb http://deb.nodesource.com/node_9.x $OS_CODENAME main' > /etc/apt/sources.list.d/nodesource.list"
       sudo sh -c "echo 'deb-src http://deb.nodesource.com/node_9.x $OS_CODENAME main' >> /etc/apt/sources.list.d/nodesource.list"
-      echo "Added NodeJS repo to source for apt-get for \"$OS_CODENAME\" distribution"
+      echo "RFR_Tools: Added NodeJS repo to source for apt-get for \"$OS_CODENAME\" distribution"
     else
-      echo "Couldn't add Nodejs repo to source because it's not available for \"$OS_CODENAME\" distribution"
+      echo "RFR_Tools: Couldn't add Nodejs repo to source because it's not available for \"$OS_CODENAME\" distribution"
     fi
 
     sudo apt-get update

@@ -23,7 +23,7 @@ source $PIHOME/$DEXTER/lib/$DEXTER/script_tools/functions_library.sh
 
 if ! quiet_mode
 then
-    sudo apt-get install python-wxgtk2.8 python-wxgtk3.0 python-wxtools wx2.8-i18n python-psutil --yes
+    sudo apt-get install python-wxgtk3.0 python-wxtools python-psutil --yes
 fi
 
 # ensure ~/Dexter/lib/Dexter exists
@@ -156,6 +156,10 @@ if [ $VERSION -eq '8' ] ; then
     echo "remoteconnectiondialog = 0" > /home/pi/.scratch.ini
 elif [ $VERSION -eq '9' ] ; then
     # associate Scratch file to our program
+    sudo apt-get install nuscratch
+    cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
+elif [ $VERSION -eq '10.0' ] ; then
+    # Buster
     sudo apt-get install nuscratch
     cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
 fi
