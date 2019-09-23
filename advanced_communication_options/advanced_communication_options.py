@@ -23,7 +23,7 @@ class MainPanel(wx.Panel):
     def __init__(self,parent):
     
         wx.Panel.__init__(self, parent=parent)
-        self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
+        # self.SetBackgroundStyle(wx.BG_STYLE_CUSTOM)
         self.SetBackgroundColour(wx.WHITE)
         self.frame = parent
 
