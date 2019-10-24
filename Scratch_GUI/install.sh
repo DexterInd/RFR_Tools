@@ -56,12 +56,12 @@ sudo lxpanelctl restart
 # Make shortcut executable
 
 # Desktop shortcut permissions.
-sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop							
+sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop
 # Remove the Scratch Start button in the Menu
 # sudo rm /usr/share/applications/scratch.desktop
 
 ######
-# Added these to solve the menu problem of scratch.  Then removed them.  
+# Added these to solve the menu problem of scratch.  Then removed them.
 # These are removed for now, the call up the Scratch Gui, not the scratch start.
 # Desktop shortcut permissions.
 # sudo rm /usr/share/raspi-ui-overrides/applications/scratch.desktop
@@ -69,11 +69,11 @@ sudo chmod +x $PIHOME/Desktop/Scratch_Start.desktop
 # Copy the Scratch_Start to the Menu
 # sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/applications/scratch.desktop
 # Copy the Scratch_Start to the Menu
-# sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/raspi-ui-overrides/applications/scratch.desktop	
+# sudo cp /home/pi/$DEXTER/Scratch_GUI/Scratch_Start.desktop /usr/share/raspi-ui-overrides/applications/scratch.desktop
 # Menu Shortcut Permissions.
-# sudo chmod 777 /usr/share/applications/scratch.desktop							
+# sudo chmod 777 /usr/share/applications/scratch.desktop
 # Menu Shortcut Permissions.
-# sudo chmod 777 /usr/share/raspi-ui-overrides/applications/scratch.desktop		
+# sudo chmod 777 /usr/share/raspi-ui-overrides/applications/scratch.desktop
 
 # # Make run_scratch_gui executable.
 sudo chmod +x $FINAL_SCRATCH_PATH/Scratch_Start.sh
@@ -86,7 +86,7 @@ sudo chmod 666 $FINAL_SCRATCH_PATH/error_log
 #leftover from Wheezy and probably Jessie
 [ -f $PIHOME/nohup.out ] && sudo chmod 666 $PIHOME/nohup.out
 
-# Note: there was a weird issue with the softlinks being created 
+# Note: there was a weird issue with the softlinks being created
 # where they were not supposed to be.
 # ensuring that there isn't a pre-existing softlink fixes this issue
 
@@ -113,7 +113,7 @@ sudo ln -s /home/pi/Dexter/GrovePi/Software/Scratch/Grove_Examples /usr/share/sc
 
 # PivotPi Link
 sudo rm  /usr/share/scratch/Projects/PivotPi 2> /dev/null
-sudo ln -s /home/pi/Dexter/PivotPi/Software/Scratch/Examples /usr/share/scratch/Projects/PivotPi 2> /dev/null 
+sudo ln -s /home/pi/Dexter/PivotPi/Software/Scratch/Examples /usr/share/scratch/Projects/PivotPi 2> /dev/null
 
 
 # Remove Scratch Shortcuts if they're there.
@@ -132,7 +132,7 @@ sudo amixer set PCM -- 100%
 # 3. remove current espeak
 sudo apt-get remove -y espeak
 # 4. reinstall espeak and helpers
-sudo apt install -y espeak python3-espeak speech-dispatcher-espeak
+sudo apt install -y espeak espeak-ng python3-espeak speech-dispatcher-espeak
 
 
 
