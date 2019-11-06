@@ -158,7 +158,7 @@ elif [ $VERSION -eq '9' ] ; then
     # associate Scratch file to our program
     sudo apt-get install nuscratch
     cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
-elif [ $VERSION -eq '10.0' ] ; then
+elif [ $VERSION -eq '10' ] ; then
     # Buster
     sudo apt-get install nuscratch
     cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/

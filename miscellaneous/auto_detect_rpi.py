@@ -90,6 +90,13 @@ RPI_VARIANTS = {
 RPI_MODEL_AND_PCBREV = 0
 RPI_GENERATION_MODEL = 1
 
+def find_revision_line(lines):
+    for line in lines:
+        if line.split("\t")[0] == "Revision":
+            return line
+
+
+
 def getRPIHardwareRevCode():
     """
     Returns the hardware revision of the Raspberry Pi.
@@ -101,8 +108,8 @@ def getRPIHardwareRevCode():
     cpuinfo_lines = readLinesFromFile("/proc/cpuinfo")
     rpi_description = ""
 
-    if not cpuinfo_lines is None:
-        revision_line = cpuinfo_lines[-2]
+    if  cpuinfo_lines is not None:
+        revision_line = find_revision_line(cpuinfo_lines)
         revision = revision_line.split(":")[-1]
         revision = revision.strip()
 
@@ -133,7 +140,7 @@ def getRPIGenerationCode():
     rpi_description = ""
 
     if not cpuinfo_lines is None:
-        revision_line = cpuinfo_lines[-2]
+        revision_line = find_revision_line(cpuinfo_lines)
         revision = revision_line.split(":")[-1]
         revision = revision.strip()
 
