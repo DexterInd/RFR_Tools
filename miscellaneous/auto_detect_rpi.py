@@ -83,7 +83,8 @@ RPI_VARIANTS = {
 "a020d3" : ["Pi 3 Model B+ v1.3", "RPI3B+"],
 "9020e0" : ["Pi 3 Model A+ v1.0", "RPI3A+"],
 
-"a03111" : ["Pi 4 Model B", "RPI4"]
+"a03111" : ["Pi 4 Model B", "RPI4"],
+"b03111" : ["Pi 4 Model B", "RPI4"]
 }
 
 # represents indexes for each corresponding key in the above dictionary
@@ -164,3 +165,7 @@ def readLinesFromFile(filename):
 
     except EnvironmentError:
         return None
+
+if __name__ == '__main__':
+
+    print( getRPIGenerationCode())
