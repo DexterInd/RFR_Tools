@@ -27,8 +27,10 @@ THE SOFTWARE.
 
 # For every change brought to this file, don't forget to update its counterpart in DexterOS.
 
-# RPI_VARIANTS was inspired from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
+# RPI_VARIANTS
 # This module is meant for retrieving the Raspberry Pi's generation model, PCB model (dimension-wise) and PCB revision
+# the official list is https://www.raspberrypi.org/documentation/hardware/raspberrypi/revision-codes/README.md
+# first inspired from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
 # Also check https://elinux.org/RPi_HardwareHistory for missing revision codes.
 # Works with Python 3 & 2 !!!
 
@@ -60,8 +62,11 @@ RPI_VARIANTS = {
 "0011" : ["Compute Module v1.0", "RPI-COMPUTE-MODULE"],
 "0014" : ["Compute Module v1.0", "RPI-COMPUTE-MODULE"],
 
+"900061" : ["Compute Module v1.1", "RPI-COMPUTE-MODULE"],
+
 "0012" : ["Model A+ v1.1", "RPI1"],
 "0015" : ["Model A+ v1.1", "RPI1"],
+"900021" : ["Model A+ v1.1", "RPI1"],
 
 "a01040" : ["Pi 2 Model B v1.0", "RPI2"],
 
@@ -69,6 +74,7 @@ RPI_VARIANTS = {
 "a21041" : ["Pi 2 Model B v1.1", "RPI2"],
 
 "a22042" : ["Pi 2 Model B v1.2", "RPI2"],
+"a02042" : ["Pi 2 Model B v1.2", "RPI2"],
 
 "900092" : ["Pi Zero v1.2", "RPI0"],
 
@@ -80,10 +86,20 @@ RPI_VARIANTS = {
 "a22082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a32082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a52082" : ["Pi 3 Model B v1.2", "RPI3"],
+
+"a22083" : ["Pi 3 Model B v1.3", "RPI3"],
+
+"a020a0" : ["Compute Module 3 v1.0", "RPI-COMPUTE-MODULE3"],
+
 "a020d3" : ["Pi 3 Model B+ v1.3", "RPI3B+"],
+
 "9020e0" : ["Pi 3 Model A+ v1.0", "RPI3A+"],
 
-"a03111" : ["Pi 4 Model B", "RPI4"]
+"a02100" : ["Compute Module 3+ v1.0", "RPI-COMPUTE-MODULE3"],
+
+"a03111" : ["Pi 4 Model B 1G", "RPI4"],
+"b03111" : ["Pi 4 Model B 2G", "RPI4"],
+"c03111" : ["Pi 4 Model B 4G", "RPI4"]
 }
 
 # represents indexes for each corresponding key in the above dictionary
@@ -164,3 +180,7 @@ def readLinesFromFile(filename):
 
     except EnvironmentError:
         return None
+
+if __name__ == '__main__':
+
+    print( getRPIGenerationCode())
