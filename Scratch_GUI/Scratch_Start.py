@@ -129,7 +129,7 @@ def launch_all(scratch_file=SCRATCH_PATH+"new.sb"):
     param.append( '--title')
     param.append('Scratch Controller')
     param.append( '-e')
-    param.append("/usr/bin/python")
+    param.append("/usr/bin/python2")
     param.append(program)
     scratch_controller = subprocess.Popen(param)
     send_bash_command_in_background(start_command)
