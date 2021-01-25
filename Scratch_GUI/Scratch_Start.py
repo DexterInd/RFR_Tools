@@ -18,7 +18,9 @@ import sys
 # ComboBoxes!  		http://wiki.wxpython.org/AnotherTutorial#wx.ComboBox
 #
 
-PIHOME="/home/pi"
+#PIHOME="/home/pi"
+# Remove dependency on hardcoded pi home folder
+PIHOME=os.getenv("HOME")
 DEXTER="Dexter"
 SCRATCH="Scratch_GUI"
 RFR_TOOLS="RFR_Tools"
