@@ -33,6 +33,8 @@ parse_cmdline_arguments() {
   systemwide=true
   userlocal=false
   envlocal=false
+
+  usepython2exec=false
   usepython3exec=true
 
   # the following 2 options can be used together
@@ -71,6 +73,9 @@ parse_cmdline_arguments() {
       --use-python3-exe-too)
         usepython3exec=true
         ;;
+      --use-python2-exe-too)
+        usepython2exec=true
+        ;;
       --install-gui)
         installgui=true
         ;;
@@ -88,7 +93,9 @@ parse_cmdline_arguments() {
 
   # exit if python/python3 are not installed in the current environment
   if [[ $installpythonpkg = "true" ]]; then
-    command -v python >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    if [[ $usepython2exec = "true" ]]; then
+      command -v python2 >/dev/null 2>&1 || { echo "Executable \"python2\" couldn't be found. Aborting." >&2; exit 2; }
+    fi
     if [[ $usepython3exec = "true" ]]; then
       command -v python3 >/dev/null 2>&1 || { echo "Executable \"python3\" couldn't be found. Aborting." >&2; exit 3; }
     fi
@@ -102,6 +109,7 @@ parse_cmdline_arguments() {
   echo "  --system-wide=$systemwide"
   echo "  --user-local=$userlocal"
   echo "  --env-local=$envlocal"
+  echo "  --use-python2-exe-too=$usepython2exec"
   echo "  --use-python3-exe-too=$usepython3exec"
   echo "  --update-aptget=$updatedebs"
   echo "  --install-deb-deps=$installdebs"
@@ -147,13 +155,13 @@ update_install_aptget() {
                          build-essential \
                          libi2c-dev \
                          i2c-tools \
-                         python-dev \
                          python3-dev \
-                         python-setuptools \
                          python3-setuptools \
-                         python-pip \
                          python3-pip \
                          libffi-dev
+    sudo apt-get install -y --no-install-recommends python-dev \
+                         python-setuptools \
+                         python-pip 
 }
 
 ################################################
@@ -194,12 +202,12 @@ clone_rfrtools_and_install_script_tools(){
 
 # called by <<install_python_pkgs_and_dependencies>>
 install_python_packages() {
-  [[ $systemwide = "true" ]] && sudo python setup.py install \
-              && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install
-  [[ $userlocal = "true" ]] && python setup.py install --user \
-              && [[ $usepython3exec = "true" ]] && python3 setup.py install --user
-  [[ $envlocal = "true" ]] && python setup.py install \
-              && [[ $usepython3exec = "true" ]] && python3 setup.py install
+  [[ $systemwide = "true" ]] && [[ $usepython2exec = "true" ]] && sudo python setup.py install 
+  [[ $systemwide = "true" ]] && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install
+  [[ $userlocal = "true" ]]  && [[ $usepython2exec = "true" ]] && python setup.py install --user 
+  [[ $userlocal = "true" ]]  && [[ $usepython3exec = "true" ]] && python3 setup.py install --user
+  [[ $envlocal = "true" ]]   && [[ $usepython2exec = "true" ]] && python setup.py install 
+  [[ $envlocal = "true" ]]   && [[ $usepython3exec = "true" ]] && python3 setup.py install
 }
 
 # called by <<install_python_pkgs_and_dependencies>>
@@ -212,12 +220,14 @@ remove_python_packages() {
   # saves output to file because we want to have the syntax highlight working
   # does this for both root and the current user because packages can be either system-wide or local
   # later on the strings used with the python command can be put in just one string that gets used repeatedly
-  python -c "import pkgutil; import os; \
+  if [[ $usepython2exec = "true" ]]; then
+    python -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
               output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
-  sudo python -c "import pkgutil; import os; \
+    sudo python -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
               output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+  fi
   if [[ $usepython3exec = "true" ]]; then
     python3 -c "import pkgutil; import os; \
                 eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
@@ -229,7 +239,7 @@ remove_python_packages() {
 
   # removing eggs for $1 python package
   # ideally, easy-install.pth needs to be adjusted too
-  # but pip seems to know how to handle missing packages, which is okay
+  # but pip seems to know how to handle missing packages, which is okay 
   while read path;
   do
     if [ ! -z "${path}" -a "${path}" != " " ]; then
