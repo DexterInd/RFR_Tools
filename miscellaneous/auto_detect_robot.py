@@ -169,7 +169,7 @@ def add_robot(in_robot):
     '''
     Add detected robot into a concatenated string,
     all robots are separated by a _
-    Do not change the _ to another character as many places 
+    Do not change the _ to another character as many places
     in the robot code depend on it
     '''
     global detected_robot
@@ -204,18 +204,18 @@ def autodetect():
     detected_robot = "None"
 
 # the order in which these are tested is important
-# as it will determine the priority in Scratch    
+# as it will determine the priority in Scratch
     if find_gopigo3():
         add_robot("GoPiGo3")
     elif find_gopigo():      # if GPG3 wasn't detected, check for GPG.
         add_robot("GoPiGo")
-    
+
     if find_brickpi3():
         add_robot("BrickPi3")
 
     if find_brickpi():
         add_robot("BrickPi+")
-    
+
     if find_grovepi():
         add_robot("GrovePi")
 
@@ -250,16 +250,19 @@ def remove_desktop_control(file):
         # print(e)
 
 def remove_control_panel(detected_robot_list):
-    GoPiGo_3_Src_File = '''/home/pi/Dexter/GoPiGo3/Software/Python/Examples/Control_Panel/gopigo3_control_panel.desktop'''
-    GoPiGo_2_Src_File = '''/home/pi/Dexter/GoPiGo/Software/Python/control_panel/gopigo_control_panel.desktop'''
-    PivotPi_Src_file  = '''/home/pi/Dexter/PivotPi/Software/Python/Control_Panel/pivotpi_control_panel.desktop'''
-    GoPiGo_3_Dsk_File = '''/home/pi/Desktop/gopigo3_control_panel.desktop'''
-    GoPiGo_2_Dsk_File = '''/home/pi/Desktop/gopigo_control_panel.desktop'''
-    PivotPi_Dsk_File = '''/home/pi/Desktop/pivotpi_control_panel.desktop'''
+    GoPiGo_3_Src_File = '/home/pi/Dexter/GoPiGo3/Software/Python/Examples/Control_Panel/gopigo3_control_panel.desktop'
+    GoPiGo_3_Calibration_Src_File = '/home/pi/Dexter/GoPiGo3/Software/Python//Examples/Calibration_Panel/gopigo3_calibration.desktop'
+    GoPiGo_2_Src_File = '/home/pi/Dexter/GoPiGo/Software/Python/control_panel/gopigo_control_panel.desktop'
+    PivotPi_Src_file  = '/home/pi/Dexter/PivotPi/Software/Python/Control_Panel/pivotpi_control_panel.desktop'
+    GoPiGo_3_Dsk_File = '/home/pi/Desktop/gopigo3_control_panel.desktop'
+    GoPiGo_3_Calibration_File = '/home/pi/Desktop/gopigo3_calibration.desktop'
+    GoPiGo_2_Dsk_File = '/home/pi/Desktop/gopigo_control_panel.desktop'
+    PivotPi_Dsk_File = '/home/pi/Desktop/pivotpi_control_panel.desktop'
 
     # Clean up all control panels
     remove_desktop_control(GoPiGo_2_Dsk_File)
     remove_desktop_control(GoPiGo_3_Dsk_File)
+    remove_desktop_control(GoPiGo_3_Calibration_File)
     remove_desktop_control(PivotPi_Dsk_File)
 
     # go through list and reinstate the robots that have been detected
@@ -269,12 +272,13 @@ def remove_control_panel(detected_robot_list):
         if detection.find("GoPiGo3") != -1:
             try:
                 copyfile(GoPiGo_3_Src_File, GoPiGo_3_Dsk_File)
+                copyfile(GoPiGo_3_Calibration_Src_File, GoPiGo_3_Calibration_File)
             except OSError as e:
                 print("Error Adding GoPiGo3 Control Panel Links")
                 print(e)
 
         # if the greedier match didn't work, then maybe this one will
-        elif detection.find("GoPiGo") != -1 : 
+        elif detection.find("GoPiGo") != -1 :
             try:
                 copyfile(GoPiGo_2_Src_File, GoPiGo_2_Dsk_File)
             except OSError as e:
@@ -289,7 +293,7 @@ def remove_control_panel(detected_robot_list):
                 print(e)
 
 
-    
+
 # Adding regex test because we need to discerne between "GoPiGo" and "GoPiGo3"
 # Borrowed from stack overflow : https://stackoverflow.com/questions/4173787/string-exact-match
 def find_word(text, search):
@@ -312,7 +316,7 @@ if __name__ == '__main__':
             outfile.write('\n')
     except:
         print("Couldn't write to ~/Dexter/detected_robot.txt")
-    
+
     # Remove all the symlinks to robots on the Desktop
     for detection in detectable_robots:
         remove_symlink(detection)
@@ -323,5 +327,5 @@ if __name__ == '__main__':
     for detection in detected_robot_list:
         add_symlink(detection)
         # print("Add " + detection)
-    
+
     remove_control_panel(detected_robot_list)
