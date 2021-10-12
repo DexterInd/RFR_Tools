@@ -86,23 +86,30 @@ RPI_VARIANTS = {
 "a22082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a32082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a52082" : ["Pi 3 Model B v1.2", "RPI3"],
-
 "a22083" : ["Pi 3 Model B v1.3", "RPI3"],
-
-"a020a0" : ["Compute Module 3 v1.0", "RPI-COMPUTE-MODULE3"],
 
 "a020d3" : ["Pi 3 Model B+ v1.3", "RPI3B+"],
 
 "9020e0" : ["Pi 3 Model A+ v1.0", "RPI3A+"],
 
+"a03111" : ["Pi 4 Model B 1G v1.1", "RPI4"],
+"b03111" : ["Pi 4 Model B 2G v1.1", "RPI4"],
+"b03112" : ["Pi 4 Model B 2G v1.2", "RPI4"],
+"b03114" : ["Pi 4 Model B 2G v1.4", "RPI4"],
+"c03111" : ["Pi 4 Model B 4G v1.1", "RPI4"],
+"c03112" : ["Pi 4 Model B 4G v1.2", "RPI4"],
+"c03114" : ["Pi 4 Model B 4G v1.4", "RPI4"],
+"d03114" : ["Pi 4 Model B 8G v1.4", "RPI4"],
+  
+"c03130" : ["Pi 400 v1.0", "RPI400"],
+    
+"a020a0" : ["Compute Module 3 v1.0", "RPI-COMPUTE-MODULE3"],
 "a02100" : ["Compute Module 3+ v1.0", "RPI-COMPUTE-MODULE3"],
-
-"a03111" : ["Pi 4 Model B 1G", "RPI4"],
-"b03111" : ["Pi 4 Model B 2G", "RPI4"],
-"b03112" : ["Pi 4 Model B 2G", "RPI4"],
-"c03111" : ["Pi 4 Model B 4G", "RPI4"],
-"c03112" : ["Pi 4 Model B 4G", "RPI4"],
-"d03114" : ["Pi 4 Model B 8G", "RPI4"]
+    
+"a03140" : ["Compute Module 4 1G v1.0", "RPI-COMPUTE-MODULE4"],
+"b03140" : ["Compute Module 4 2G v1.0", "RPI-COMPUTE-MODULE4"],
+"c03140" : ["Compute Module 4 4G v1.0", "RPI-COMPUTE-MODULE4"],
+"d03140" : ["Compute Module 4 8G v1.0", "RPI-COMPUTE-MODULE4"]
 }
 
 # represents indexes for each corresponding key in the above dictionary
