@@ -81,19 +81,6 @@ parse_cmdline_arguments() {
   done
 
 
-  # exit if git is not installed
-  if [[ $installdebs = "false" ]]; then
-    command -v git >/dev/null 2>&1 || { echo "This script requires \"git\" but it's not installed. Use \"--install-deb-deps\" option. Aborting." >&2; exit 1; }
-  fi
-
-  # exit if python/python3 are not installed in the current environment
-  if [[ $installpythonpkg = "true" ]]; then
-    command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
-    if [[ $usepython3exec = "true" ]]; then
-      command -v python3 >/dev/null 2>&1 || { echo "Executable \"python3\" couldn't be found. Aborting." >&2; exit 3; }
-    fi
-  fi
-
   pushd $PIHOME > /dev/null
   result=${PWD##*/}
 
@@ -161,6 +148,19 @@ install_pythons() {
   command -v python2 >/dev/null 2>&1 || { feedback "installing python2"; sudo apt install python2 -y; }
   # needed on Stretch
   command -v python3 >/dev/null 2>&1 || { feedback "installing python3" ;sudo apt install python3 -y; }
+
+  # exit if python2/python3 are not installed in the current environment
+  if [[ $installpythonpkg = "true" ]]; then
+    command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    if [[ $usepython3exec = "true" ]]; then
+      command -v python3 >/dev/null 2>&1 || { echo "Executable \"python3\" couldn't be found. Aborting." >&2; exit 3; }
+    fi
+  fi
+}
+
+install_git(){
+  # install git
+  command -v git >/dev/null 2>&1 || { echo "installing git"; sudo apt install git -y; }
 }
 
 ################################################
@@ -277,11 +277,12 @@ install_guis() {
 ############ Calling All Functions  ############
 ################################################
 
+install_git
 check_if_run_with_pi
 parse_cmdline_arguments "$@"
-update_install_aptget
 install_script_tools
 install_pythons
+update_install_aptget
 clone_rfr_tools
 install_remove_python_packages
 install_guis
