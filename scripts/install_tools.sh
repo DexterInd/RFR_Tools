@@ -156,6 +156,13 @@ update_install_aptget() {
                          libffi-dev
 }
 
+install_pythons() {
+  # needed on bullseye
+  command -v python2 >/dev/null 2>&1 || { sudo apt install python2 -y; }
+  # needed on Stretch
+  command -v python3 >/dev/null 2>&1 || { sudo apt install python3 -y; }
+}
+
 ################################################
 ########### Cloning RFR_Tools  #################
 ################################################
@@ -272,6 +279,7 @@ check_if_run_with_pi
 parse_cmdline_arguments "$@"
 update_install_aptget
 clone_rfrtools_and_install_script_tools
+install_pythons
 install_remove_python_packages
 install_guis
 
