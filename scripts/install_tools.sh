@@ -157,20 +157,21 @@ update_install_aptget() {
 }
 
 install_pythons() {
-  # needed on bullseye
-  command -v python2 >/dev/null 2>&1 || { sudo apt install python2 -y; }
+  # needed on Bullseye
+  command -v python2 >/dev/null 2>&1 || { feedback "installing python2"; sudo apt install python2 -y; }
   # needed on Stretch
-  command -v python3 >/dev/null 2>&1 || { sudo apt install python3 -y; }
+  command -v python3 >/dev/null 2>&1 || { feedback "installing python3" ;sudo apt install python3 -y; }
 }
 
 ################################################
 ########### Cloning RFR_Tools  #################
 ################################################
 
-# called way down bellow
-clone_rfrtools_and_install_script_tools(){
+# called way down below
+clone_rfr_tools(){
   # it's simpler and more reliable (for now) to just delete the repo and clone a new one
   # otherwise, we'd have to deal with all the intricacies of git
+  feedback "Cloning RFR Tools"
   sudo rm -rf $RFRTOOLS
   pushd $DEXTER_LIB > /dev/null
   git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/RFR_Tools.git
@@ -178,10 +179,13 @@ clone_rfrtools_and_install_script_tools(){
   # useful in case we need it
   current_branch=$(git branch | grep \* | cut -d ' ' -f2-)
   popd > /dev/null
+  feedback "Done Cloning RFR Tools"
+}
 
+install_script_tools() {
   # update script_tools first
   curl --silent -kL https://raw.githubusercontent.com/DexterInd/script_tools/$selectedbranch/install_script_tools.sh > $PIHOME/.tmp_script_tools.sh
-  echo "Installing script_tools. This might take a while.."
+  echo "Installing script_tools."
   bash $PIHOME/.tmp_script_tools.sh $selectedbranch > /dev/null
   ret_val=$?
   rm $PIHOME/.tmp_script_tools.sh
@@ -193,8 +197,6 @@ clone_rfrtools_and_install_script_tools(){
   source $DEXTERSCRIPT/functions_library.sh
   feedback "Done installing script_tools"
 }
-
-
 ################################################
 ######## Install/Remove Python Packages ########
 ################################################
@@ -278,9 +280,10 @@ install_guis() {
 check_if_run_with_pi
 parse_cmdline_arguments "$@"
 update_install_aptget
-clone_rfrtools_and_install_script_tools
+install_script_tools
 install_pythons
+clone_rfr_tools
 install_remove_python_packages
 install_guis
-
+feedback "Done installing RFR_Tools library"
 exit 0
