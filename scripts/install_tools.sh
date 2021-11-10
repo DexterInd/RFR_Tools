@@ -10,6 +10,7 @@ DEXTERSCRIPT=$DEXTER_LIB/script_tools
 RFRTOOLS=$DEXTER_LIB/RFR_Tools
 REPO_PACKAGE=auto_detect_rpi
 OS_CODENAME=$(lsb_release --codename --short)
+VERSION=$(sed 's/\..*//' /etc/debian_version)
 
 ################################################
 ######## Parsing Command Line Arguments ########
@@ -33,7 +34,16 @@ parse_cmdline_arguments() {
   systemwide=true
   userlocal=false
   envlocal=false
+
+  # which python to support
   usepython3exec=true
+  # Starting with Bullseye, turn python2 off
+  if [[ $VERSION -ge 11 ]]; then
+    usepython2exec=false
+  else
+    usepython2exec=true
+  fi
+
 
   # the following 2 options can be used together
   updatedebs=false
@@ -71,6 +81,9 @@ parse_cmdline_arguments() {
       --use-python3-exe-too)
         usepython3exec=true
         ;;
+      --use-python2-exe-too)
+        usepython2exec=true
+        ;;
       --install-gui)
         installgui=true
         ;;
@@ -90,6 +103,7 @@ parse_cmdline_arguments() {
   echo "  --user-local=$userlocal"
   echo "  --env-local=$envlocal"
   echo "  --use-python3-exe-too=$usepython3exec"
+  echo "  --use-python2-exe-too=$usepython2exec"
   echo "  --update-aptget=$updatedebs"
   echo "  --install-deb-deps=$installdebs"
   echo "  --install-gui=$installgui"
@@ -151,7 +165,9 @@ install_pythons() {
 
   # exit if python2/python3 are not installed in the current environment
   if [[ $installpythonpkg = "true" ]]; then
-    command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    if [[ $usepython2exec = "true" ]]; then
+      command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    fi
     if [[ $usepython3exec = "true" ]]; then
       command -v python3 >/dev/null 2>&1 || { echo "Executable \"python3\" couldn't be found. Aborting." >&2; exit 3; }
     fi
@@ -172,9 +188,9 @@ clone_rfr_tools(){
   # it's simpler and more reliable (for now) to just delete the repo and clone a new one
   # otherwise, we'd have to deal with all the intricacies of git
   feedback "Cloning RFR Tools"
-  sudo rm -rf $RFRTOOLS
+   sudo rm -rf $RFRTOOLS
   pushd $DEXTER_LIB > /dev/null
-  git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/RFR_Tools.git
+   git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/RFR_Tools.git
   cd $RFRTOOLS
   # useful in case we need it
   current_branch=$(git branch | grep \* | cut -d ' ' -f2-)
@@ -203,12 +219,14 @@ install_script_tools() {
 
 # called by <<install_python_pkgs_and_dependencies>>
 install_python_packages() {
-  [[ $systemwide = "true" ]] && sudo python2 setup.py install \
-              && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install
-  [[ $userlocal = "true" ]] && python2 setup.py install --user \
-              && [[ $usepython3exec = "true" ]] && python3 setup.py install --user
-  [[ $envlocal = "true" ]] && python2 setup.py install \
-              && [[ $usepython3exec = "true" ]] && python3 setup.py install
+  [[ $systemwide = "true" ]] && [[ $usepython2exec = "true" ]] && sudo python2 setup.py install
+  [[ $systemwide = "true" ]] && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install
+
+  [[ $userlocal = "true" ]] && [[ $usepython2exec = "true" ]] && python2 setup.py install --user
+  [[ $userlocal = "true" ]] && [[ $usepython3exec = "true" ]] && python3 setup.py install --user
+
+  [[ $envlocal = "true" ]] && [[ $usepython3exec = "true" ]] && python2 setup.py install
+  [[ $envlocal = "true" ]] && [[ $usepython3exec = "true" ]] && python3 setup.py install
 }
 
 # called by <<install_python_pkgs_and_dependencies>>
@@ -221,12 +239,14 @@ remove_python_packages() {
   # saves output to file because we want to have the syntax highlight working
   # does this for both root and the current user because packages can be either system-wide or local
   # later on the strings used with the python command can be put in just one string that gets used repeatedly
+  if [[ $usepython2exec = "true" ]]; then
   python2 -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
               output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
   sudo python2 -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
               output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+  fi
   if [[ $usepython3exec = "true" ]]; then
     python3 -c "import pkgutil; import os; \
                 eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \

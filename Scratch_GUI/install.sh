@@ -157,11 +157,13 @@ if [ $VERSION -eq '8' ] ; then
 elif [ $VERSION -eq '9' ] ; then
     # associate Scratch file to our program
     sudo apt-get install -y nuscratch
-    cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
 elif [ $VERSION -eq '10' ] ; then
     # Buster
     sudo apt-get install -y nuscratch
-    cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
+elif [ $VERSION -eq '11' ] ; then
+    # Bullseye
+    sudo apt install -y nuscratch
 fi
+cp -f $FINAL_SCRATCH_PATH/mimeapps.list $PIHOME/.config/
 
 popd > /dev/null
