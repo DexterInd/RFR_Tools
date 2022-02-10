@@ -12,6 +12,8 @@ from __future__ import division
 import time
 import di_mutex
 
+__version__ = "1.3.2"
+
 # Enabling one of the communication libraries
 # This is not meant to change on a regular basis
 # If Periphery doesn't work for you, uncomment either pigpio or smbus
@@ -91,6 +93,12 @@ class DI_I2C(object):
         self.mutex = di_mutex.DI_Mutex(name = ("I2C_Bus_" + bus))
         self.set_address(address)
         self.big_endian = big_endian
+
+    def __del__(self):
+
+        # release pigpio resources
+        if RPI_1_Module == "pigpio":
+    	    self.i2c_bus.stop()
 
     def reconfig_bus(self):
         """Reconfigure I2C bus
@@ -447,14 +455,14 @@ class DI_I2C_RPI_SW(object):
 
     def __restore_gpio_pins__(self):
         """ Restore HW I2C functionality on GPIO pins 2 & 3 """
-        
+
         wiringpi.pinModeAlt(3, 4) # restore ALT0 functionality on SCL pin
         wiringpi.pinModeAlt(2, 4) # restore ALT0 functionality on SDA pin
         self.BusActive = False
 
     def __exit_cleanup__(self):
         """ Called at exit to clean up """
-        
+
         if self.BusActive:
             self.__restore_gpio_pins__()
 
