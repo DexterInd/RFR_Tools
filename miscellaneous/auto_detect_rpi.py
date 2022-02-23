@@ -76,11 +76,15 @@ RPI_VARIANTS = {
 "a22042" : ["Pi 2 Model B v1.2", "RPI2"],
 "a02042" : ["Pi 2 Model B v1.2", "RPI2"],
 
-"900092" : ["Pi Zero v1.2", "RPI0"],
+"900092" : ["Pi Zero v1.2 Sony", "RPI0"],
+"920092" : ["Pi Zero v1.2 Embest", "RPI0"],
 
-"900093" : ["Pi Zero v1.3", "RPI0"],
+"900093" : ["Pi Zero v1.3 Sony", "RPI0"],
+"920093" : ["Pi Zero v1.3 Embest", "RPI0"],
 
 "9000C1" : ["Pi Zero W v1.1", "RPI0"],
+
+"902120" : ["Pi Zero 2W v1.0", "RPI0-2"],
 
 "a02082" : ["Pi 3 Model B v1.2", "RPI3"],
 "a22082" : ["Pi 3 Model B v1.2", "RPI3"],
@@ -100,12 +104,13 @@ RPI_VARIANTS = {
 "c03112" : ["Pi 4 Model B 4G v1.2", "RPI4"],
 "c03114" : ["Pi 4 Model B 4G v1.4", "RPI4"],
 "d03114" : ["Pi 4 Model B 8G v1.4", "RPI4"],
-  
+
 "c03130" : ["Pi 400 v1.0", "RPI400"],
-    
+
 "a020a0" : ["Compute Module 3 v1.0", "RPI-COMPUTE-MODULE3"],
+"a220a0" : ["Compute Module 3 v1.0 Embest", "RPI-COMPUTE-MODULE3"],
 "a02100" : ["Compute Module 3+ v1.0", "RPI-COMPUTE-MODULE3"],
-    
+
 "a03140" : ["Compute Module 4 1G v1.0", "RPI-COMPUTE-MODULE4"],
 "b03140" : ["Compute Module 4 2G v1.0", "RPI-COMPUTE-MODULE4"],
 "c03140" : ["Compute Module 4 4G v1.0", "RPI-COMPUTE-MODULE4"],
