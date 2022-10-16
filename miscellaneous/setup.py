@@ -2,9 +2,10 @@
 #
 '''
 ## License
-# https://www.dexterindustries.com
+# https://gopigo.io
+# https://modrobotics.com
 #
-# Copyright (c) 2020 Dexter Industries
+# Copyright (c) 2022 Modular Robotics
 # Released under the MIT license (http://choosealicense.com/licenses/mit/).
 # For more information see https://github.com/DexterInd/DI_Sensors/blob/master/LICENSE.md
 '''
@@ -17,11 +18,11 @@ IF CHANGES ARE NEEDED EDIT THE ONE IN RfR THEN PULL IT HERE
 '''
 import setuptools
 setuptools.setup(
-	name="Dexter_AutoDetection_and_I2C_Mutex",
-	version = "1.3.2",
-	description="Dexter Industries Robot Autodetection and I2C Mutex Security",
-	author="Dexter Industries",
-	url="http://www.dexterindustries.com/GoPiGo/",
+	name="Robot_AutoDetection_and_I2C_Mutex",
+	version = "1.3.3",
+	description="Modular Robotics Robot Autodetection and I2C Mutex Security",
+	author="Modular Robotics",
+	url="https://GoPiGo.io/",
 	py_modules=['auto_detect_robot', 'auto_detect_rpi', 'I2C_mutex', 'di_i2c', 'di_mutex'],
 	install_requires=['smbus-cffi', 'pyserial', 'python-periphery', 'wiringpi'],
 )
