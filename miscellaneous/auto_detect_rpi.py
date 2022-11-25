@@ -100,10 +100,13 @@ RPI_VARIANTS = {
 "b03111" : ["Pi 4 Model B 2G v1.1", "RPI4"],
 "b03112" : ["Pi 4 Model B 2G v1.2", "RPI4"],
 "b03114" : ["Pi 4 Model B 2G v1.4", "RPI4"],
+"b03115" : ["Pi 4 Model B 2G v1.5", "RPI4"],
 "c03111" : ["Pi 4 Model B 4G v1.1", "RPI4"],
 "c03112" : ["Pi 4 Model B 4G v1.2", "RPI4"],
 "c03114" : ["Pi 4 Model B 4G v1.4", "RPI4"],
+"c03115" : ["Pi 4 Model B 4G v1.5", "RPI4"],
 "d03114" : ["Pi 4 Model B 8G v1.4", "RPI4"],
+"d03115" : ["Pi 4 Model B 8G v1.5", "RPI4"],
 
 "c03130" : ["Pi 400 v1.0", "RPI400"],
 
