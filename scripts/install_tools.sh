@@ -160,7 +160,7 @@ install_pythons() {
 
 install_git(){
   # install git
-  command -v git >/dev/null 2>&1 || { echo "installing git"; sudo apt install git -y; }
+  command -v git >/dev/null 2>&1 || { echo "installing git"; sudo apt install git -y; echo "done with git install";}
 }
 
 ################################################
