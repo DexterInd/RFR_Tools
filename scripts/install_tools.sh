@@ -34,11 +34,6 @@ parse_cmdline_arguments() {
   userlocal=false
   envlocal=false
   usepython3exec=true
-  if [[ $OS_CODENAME = 'bookworm' ]]; then
-    usepython2exec = false
-  else
-    usepython2exec = true
-  fi
 
   # the following 2 options can be used together
   updatedebs=false
