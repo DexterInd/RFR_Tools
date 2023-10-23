@@ -155,7 +155,9 @@ install_pythons() {
 
   # exit if python2/python3 are not installed in the current environment
   if [[ $installpythonpkg = "true" ]]; then
-    command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    if [[ $OS_CODENAME != "bookworm" ]]; then
+      command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    fi
     if [[ $usepython3exec = "true" ]]; then
       command -v python3 >/dev/null 2>&1 || { echo "Executable \"python3\" couldn't be found. Aborting." >&2; exit 3; }
     fi
@@ -225,12 +227,14 @@ remove_python_packages() {
   # saves output to file because we want to have the syntax highlight working
   # does this for both root and the current user because packages can be either system-wide or local
   # later on the strings used with the python command can be put in just one string that gets used repeatedly
+  if [[ $OS_CODENAME != "bookworm" ]]; then
   python2 -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
               output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
   sudo python2 -c "import pkgutil; import os; \
               eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
               output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+  fi
   if [[ $usepython3exec = "true" ]]; then
     python3 -c "import pkgutil; import os; \
                 eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
