@@ -34,6 +34,11 @@ parse_cmdline_arguments() {
   userlocal=false
   envlocal=false
   usepython3exec=true
+  if [[ $OS_CODENAME = 'bookworm' ]]; then
+    usepython2exec = false
+  else
+    usepython2exec = true
+  fi
 
   # the following 2 options can be used together
   updatedebs=false
@@ -157,6 +162,8 @@ install_pythons() {
   if [[ $installpythonpkg = "true" ]]; then
     if [[ $OS_CODENAME != "bookworm" ]]; then
       command -v python2 >/dev/null 2>&1 || { echo "Executable \"python\" couldn't be found. Aborting." >&2; exit 2; }
+    else
+      echo "not looking for python2"
     fi
     if [[ $usepython3exec = "true" ]]; then
       command -v python3 >/dev/null 2>&1 || { echo "Executable \"python3\" couldn't be found. Aborting." >&2; exit 3; }
@@ -284,7 +291,7 @@ install_guis() {
 ################################################
 ############ Calling All Functions  ############
 ################################################
-
+feedback  "Installing RFR_TOOLS"
 install_git
 check_if_run_with_pi
 parse_cmdline_arguments "$@"
