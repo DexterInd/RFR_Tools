@@ -145,7 +145,11 @@ update_install_aptget() {
 
 install_pythons() {
   # needed on Bullseye
+  if [[ $OS_CODENAME != "bookworm" ]]; then
   command -v python2 >/dev/null 2>&1 || { feedback "installing python2"; sudo apt install python2 -y; }
+  else
+     echo Bypassing python2 for Bookworm.
+  fi
   # needed on Stretch
   command -v python3 >/dev/null 2>&1 || { feedback "installing python3" ;sudo apt install python3 -y; }
 
