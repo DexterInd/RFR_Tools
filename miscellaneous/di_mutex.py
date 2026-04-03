@@ -6,9 +6,6 @@
 #
 # Python mutex
 
-from __future__ import print_function
-from __future__ import division
-
 import time
 import fcntl
 import os
@@ -26,10 +23,10 @@ class DI_Mutex(object):
         self.Handle = None
 
         try:
-            open(self.Filename, 'w')
+            open(self.Filename, 'w').close()
             if os.path.isfile(self.Filename):
                 os.chmod(self.Filename, 0o777)
-        except Exception as e:
+        except Exception:
             pass
 
         # Register the exit method
@@ -49,7 +46,7 @@ class DI_Mutex(object):
                 # lock
                 fcntl.lockf(self.Handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 return
-            except IOError: # already locked by a different process
+            except OSError: # already locked by a different process
                 time.sleep(self.LoopTime)
             except Exception as e:
                 print(e)
@@ -57,7 +54,7 @@ class DI_Mutex(object):
     def release(self):
         """ Release the mutex """
 
-        if self.Handle is not None and self.Handle is not True:
+        if self.Handle is not None:
             self.Handle.close()
             self.Handle = None
             time.sleep(self.LoopTime)
