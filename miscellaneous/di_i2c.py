@@ -7,6 +7,7 @@
 # Python I2C drivers
 
 import time
+import threading
 import di_mutex
 
 __version__ = "1.3.2"
@@ -130,6 +131,7 @@ class DI_I2C(object):
             raise IOError("I2C bus not supported")
 
         self.mutex = di_mutex.DI_Mutex(name = ("I2C_Bus_" + bus))
+        self._thread_lock = threading.Lock()  # intra-process thread safety (fcntl is per-process only)
         self.set_address(address)
         self.big_endian = big_endian
 
@@ -185,7 +187,12 @@ class DI_I2C(object):
         # type cast to int to ensure compatibility
         inBytes = int(inBytes)
 
-        self.mutex.acquire() # acquire the bus mutex
+        with self._thread_lock:  # serialize concurrent threads within this process
+            return self._transfer_locked(outArr, inBytes)
+
+    def _transfer_locked(self, outArr, inBytes):
+        """Internal transfer called with _thread_lock already held."""
+        self.mutex.acquire() # acquire the inter-process bus mutex
 
         return_val = None
 

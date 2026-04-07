@@ -7,12 +7,14 @@
 import fcntl
 import time
 import os
+import threading
 
 class Mutex(object):
 
     def __init__(self, debug = False):
         self.mutex_debug = debug
-        self.DexterLockI2C_handle = None
+        self._local = threading.local()  # thread-local storage for file handle
+        self._thread_lock = threading.RLock()  # intra-process: fcntl locks are per-process, not per-thread
         self.DexterLockI2C_handle_filename = '/run/lock/DexterLockI2C'
 
         # putting the following file in /run/lock so any user can have access
@@ -30,12 +32,13 @@ class Mutex(object):
         if self.mutex_debug:
             print("I2C mutex acquire")
 
+        self._thread_lock.acquire()  # block other threads in this process first
         acquired = False
         while not acquired:
             try:
-                self.DexterLockI2C_handle = open(self.DexterLockI2C_handle_filename, 'w')
+                self._local.handle = open(self.DexterLockI2C_handle_filename, 'w')
                 # lock
-                fcntl.lockf(self.DexterLockI2C_handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                fcntl.lockf(self._local.handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 acquired = True
             except OSError: # already locked by a different process
                 time.sleep(0.001)
@@ -48,10 +51,12 @@ class Mutex(object):
     def release(self):
         if self.mutex_debug:
             print("I2C mutex release: {}".format(time.time()))
-        if self.DexterLockI2C_handle is not None:
-            self.DexterLockI2C_handle.close()
-            self.DexterLockI2C_handle = None
+        handle = getattr(self._local, 'handle', None)
+        if handle is not None:
+            handle.close()
+            self._local.handle = None
             time.sleep(0.001)
+            self._thread_lock.release()  # unblock waiting threads
 
     def enableDebug(self):
         self.mutex_debug = True
