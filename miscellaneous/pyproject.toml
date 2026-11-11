@@ -3,8 +3,8 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mr_rfr-tools"
-version = "2.0.1"
+name = "mr-rfr-tools"
+version = "2.0.2"
 description = "Modular Robotics robot auto-detection and I2C mutex utilities"
 license = "MIT"
 authors = [{ name = "Modular Robotics", email = "support@modrobotics.com" }]
