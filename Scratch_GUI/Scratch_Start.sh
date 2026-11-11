@@ -7,7 +7,7 @@ screen -d -r local
 python /home/pi/Dexter/lib/Dexter/Scratch_GUI/Scratch_Start.py
 
 ##
-# Below is the graveyard of calls unsuccessfully tried to make this work.  
+# Below is the graveyard of calls unsuccessfully tried to make this work.
 # sudo lxterminal --command "sudo xhost +"
 #sudo lxterminal --command "sudo python /home/pi/Desktop/DexterEd/Scratch_GUI/Scratch_Start.py"
 #lxterminal --command "sudo python /home/pi/Desktop/DexterEd/Scratch_GUI/Scratch_Start.py"

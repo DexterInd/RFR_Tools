@@ -57,7 +57,7 @@ def read_state():
 	in_string = error_file.read()
 	error_file.close()
 	return in_string
-	
+
 def send_bash_command(bashCommand):
 	# print bashCommand
 	write_debug(bashCommand)
@@ -71,7 +71,7 @@ def send_bash_command_in_background(bashCommand):
 	# Fire off a bash command and forget about it.
 	write_debug(bashCommand)
 	process = subprocess.Popen(bashCommand.split())
-	
+
 def kill_all_open_processes():
     p = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE)
     out, err = p.communicate()
@@ -134,34 +134,34 @@ class MainPanel(wx.Panel):
         sizer = wx.BoxSizer(wx.VERTICAL)
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        
+
         #-------------------------------------------------------------------
         # Standard Buttons
 
         # Start Programming
         start_programming = wx.Button(self, label="Start Programming!", pos=(25,75))
         start_programming.Bind(wx.EVT_BUTTON, self.start_programming)
-        
+
         # Exit
         exit_button = wx.Button(self, label="Exit", pos=(25,125))
         exit_button.Bind(wx.EVT_BUTTON, self.onClose)
 
 
-        # End Standard Buttons		
+        # End Standard Buttons
         #-------------------------------------------------------------------
         # Drop Boxes
 
         controls = ['GoPiGo', 'GrovePi', 'BrickPi', 'PivotPi']	# Options for drop down.
 
         # Select Platform.
-        
+
         robotDrop = wx.ComboBox(self, -1, read_state(), pos=(25, 25), size=(150, -1), choices=controls, style=wx.CB_READONLY)  # Drop down setup
-        robotDrop.Bind(wx.EVT_COMBOBOX, self.robotDrop)					# Binds drop down.		
+        robotDrop.Bind(wx.EVT_COMBOBOX, self.robotDrop)					# Binds drop down.
         wx.StaticText(self, -1, "Select a Robot:", (25, 5))					# (Minus 50, minus 0)
-        
+
         # Drop Boxes
         #-------------------------------------------------------------------
-        
+
         hSizer.Add((1,1), 1, wx.EXPAND)
         hSizer.Add(sizer, 0, wx.TOP, 100)
         hSizer.Add((1,1), 0, wx.ALL, 75)
@@ -182,25 +182,25 @@ class MainPanel(wx.Panel):
             dc = wx.ClientDC(self)
             rect = self.GetUpdateRegion().GetBox()
             dc.SetClippingRect(rect)
-        dc.Clear()	
+        dc.Clear()
         bmp = wx.Bitmap(ICON_PATH+"dex.png")	# Draw the photograph.
         dc.DrawBitmap(bmp, 0, 400)						# Absolute position of where to put the picture
-        
+
         # Add a second picture.
         robot = ICON_PATH+read_state()+".png"
         bmp = wx.Bitmap(robot)	# Draw the photograph.
-        dc.DrawBitmap(bmp, 200, 0)	
+        dc.DrawBitmap(bmp, 200, 0)
 
-        
-        
+
+
     def robotDrop(self, event):
         write_debug("robotDrop Selected.")
         controls = ['GoPiGo', 'GrovePi', 'BrickPi', 'PivotPi']	# Options for drop down.
         value = event.GetSelection()
         print controls[value]
         # position = 0					# Position in the key list on file
-        write_state(controls[value]) 	# print value to file.  
-        
+        write_state(controls[value]) 	# print value to file.
+
         # Update Picture
         robot = ICON_PATH+read_state()+".png"
         png = wx.Image(robot, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
@@ -208,12 +208,12 @@ class MainPanel(wx.Panel):
 
     def start_programming(self, event):
         # Kill all Python Programs.  Any running *Scratch* Python Programs.
-        write_debug("Start robot.")	
+        write_debug("Start robot.")
         dlg = wx.MessageDialog(self, 'This will close any open Scratch programs.  Please save your work and click Ok!', 'Alert!', wx.OK|wx.CANCEL|wx.ICON_INFORMATION)
         ran_dialog = False
         if dlg.ShowModal() == wx.ID_OK:
             kill_all_open_processes()  # Kills all open squeak, Scratch programs.
-        
+
             user_selection = read_state()
             if user_selection.find('BrickPi') >= 0:
                 if autodetect().find("BrickPi3") >= 0:
@@ -231,9 +231,9 @@ class MainPanel(wx.Panel):
                 program = "/home/pi/Dexter/GrovePi/Software/Scratch/GrovePiScratch.py"
             start_command = "sudo python "+program
             send_bash_command_in_background(start_command)
-        
-            write_debug("Programming Started.")	
-        
+
+            write_debug("Programming Started.")
+
             file_temp = open(SCRATCH_PATH+"open_scratch.tmp", "w")
             file_temp.close()
 
@@ -242,19 +242,19 @@ class MainPanel(wx.Panel):
             sys.exit()				# Exit!
         else:
             print "Cancel Scratch Start!"
-            dlg.Destroy()	
+            dlg.Destroy()
         dlt.Destroy()
 
         # Start Scratch
-        ''' 
+        '''
         start_command = "scratch /home/pi/Dexter/lib/Dexter/Scratch_GUI/new.sb"
         send_bash_command_in_background(start_command)
         dlg = wx.MessageDialog(self, 'Starting Scratch Programming!', 'Update', wx.OK|wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
         '''
-        
-        
+
+
     def onClose(self, event):	# Close the entire program.
         write_debug("Close Pressed.")
         kill_all_open_processes()  # Kills all open squeak, Scratch programs.
@@ -275,7 +275,7 @@ class MainFrame(wx.Frame):
         wx.Log.SetVerbose(False)
         wx.Frame.__init__(self, None, title="Scratch for Robots", size=(400,300))		# Set the frame size
 
-        panel = MainPanel(self)        
+        panel = MainPanel(self)
         self.Center()
 
 ########################################################################
