@@ -26,7 +26,7 @@ if [ $VERSION -eq '7' ]; then
 	IMOPTIONS=""
 	DOCUMENT=""
 	WRAPPER=""
-	
+
 	# do not crash on dbus errors
 	export DBUS_FATAL_WARNINGS=0
 
@@ -35,20 +35,20 @@ if [ $VERSION -eq '7' ]; then
 	#[ -z "$LC_ALL" ] && export LC_ALL="$LANG"
 
 	VMOPTIONS="$VMOPTIONS -vm-sound-alsa"
-	
+
 elif [ $VERSION -eq '8' ]; then
 	echo "Version 8 found!  You have Jessie!"
 	# If we found Jesse, the proper location of the html files is in
 	VM="/usr/bin/squeak"
 	VMOPTIONS=""
-	# IMAGE="/usr/share/scratch/NuScratch02052016.image" 
+	# IMAGE="/usr/share/scratch/NuScratch02052016.image"
 
 	if test -n "$(find /usr/share/scratch/ -maxdepth 1 -name 'NuScratch*')"
 	then
 	IMAGE=`find /usr/share/scratch/ -maxdepth 1 -name "NuScratch*" -type f`
 	fi
 	VMOPTIONS="$VMOPTIONS -vm-sound-alsa"
-	
+
 	IMOPTIONS=""
 	DOCUMENT=""
 	# WRAPPER="sudo -E "
@@ -70,7 +70,7 @@ elif [ $VERSION -eq '8' ]; then
 	if [ $? -eq 0 ]; then
 		sudo modprobe i2c-dev
 	fi
-	
+
 fi
 
 echo $VERSION
@@ -194,7 +194,7 @@ elif [ $VERSION -eq '8' ]; then
   echo "Version 8 found!  You have Jessie!"
   # If we found Jesse,
 
-	
+
 	if [ -f $SCRATCH_PATH/open_scratch.tmp ]; then
 		sudo rm $SCRATCH_PATH/open_scratch.tmp
 		echo Executing: $WRAPPER "$VM" $VMOPTIONS "$IMAGE" "$DOCUMENT" $IMOPTIONS

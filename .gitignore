@@ -11,3 +11,7 @@ miscellaneous/mr_rfr_tools.egg-info/PKG-INFO
 miscellaneous/mr_rfr_tools.egg-info/requires.txt
 miscellaneous/mr_rfr_tools.egg-info/SOURCES.txt
 miscellaneous/mr_rfr_tools.egg-info/top_level.txt
+miscellaneous/PyPi-PUBLISHING.md
+miscellaneous/PUBLISHING.md
+miscellaneous/dist/mr_rfr_tools-2.0.2-py3-none-any.whl
+miscellaneous/dist/mr_rfr_tools-2.0.2.tar.gz
