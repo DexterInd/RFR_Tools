@@ -4,9 +4,6 @@
 # Released under the MIT license (http://choosealicense.com/licenses/mit/).
 # For more information see https://github.com/DexterInd/DI_Sensors/blob/master/LICENSE.md
 
-from __future__ import print_function
-from __future__ import division
-
 '''
 THIS IS NOT A COPY OF ANOTHER FILE.
 --John (June 2017)

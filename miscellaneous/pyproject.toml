@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mr-rfr-tools"
+version = "2.0.2"
+description = "Modular Robotics robot auto-detection and I2C mutex utilities"
+license = "MIT"
+authors = [{ name = "Modular Robotics", email = "support@modrobotics.com" }]
+readme = "README.md"
+requires-python = ">=3.7"
+
+# python-periphery is the primary I2C backend on Trixie (Debian 12+).
+# pyserial is required by auto_detect_robot.py for serial port scanning.
+dependencies = [
+    "python-periphery",
+    "pyserial",
+]
+
+[project.urls]
+Homepage = "https://gopigo.io/"
+BrickPi = "https://brickpi.com"
+
+[tool.setuptools]
+# Flat-module layout: each .py file in this directory is installed directly
+# into site-packages so callers can do `import di_i2c`, `import auto_detect_rpi`, etc.
+py-modules = [
+    "auto_detect_robot",
+    "auto_detect_rpi",
+    "I2C_mutex",
+    "di_i2c",
+    "di_mutex",
+]

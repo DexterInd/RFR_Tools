@@ -25,180 +25,109 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
 
-# For every change brought to this file, don't forget to update its counterpart in DexterOS.
+# auto_detect_rpi.py
+# Detects the Raspberry Pi model by reading /proc/device-tree/model.
+# This is the standard kernel interface — it works on all Pi models without
+# requiring a manually-maintained revision-code lookup table.
 
-# RPI_VARIANTS
-# This module is meant for retrieving the Raspberry Pi's generation model, PCB model (dimension-wise) and PCB revision
-# the official list is https://www.raspberrypi.org/documentation/hardware/raspberrypi/revision-codes/README.md
-# first inspired from http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
-# Also check https://elinux.org/RPi_HardwareHistory for missing revision codes.
-# Works with Python 3 & 2 !!!
+import re
 
-# Each key represents the hardware revision number
-# This isn't the same as the RaspberryPi revision
-# Having the hardware revision number is useful when working with hardware or software.
+# Explicit overrides for models whose generation cannot be inferred from a
+# plain integer (Pi 400 is Pi-4-based; Zero has no number; 3B+/3A+ are
+# distinct variants; compute modules follow their own naming).
+# Ordered most-specific first to avoid substring false-matches.
+_GENERATION_RULES = [
+    (r"raspberry pi 400",              "RPI4"),            # Pi 400 is Pi 4-based
+    (r"raspberry pi 3 model b\+",      "RPI3B+"),
+    (r"raspberry pi 3 model a\+",      "RPI3A+"),
+    (r"raspberry pi zero 2",           "RPI0-2"),          # must come before "zero"
+    (r"raspberry pi zero",             "RPI0"),
+    (r"raspberry pi compute module 4", "RPI-COMPUTE-MODULE4"),
+    (r"raspberry pi compute module 3", "RPI-COMPUTE-MODULE3"),
+    (r"raspberry pi compute module",   "RPI-COMPUTE-MODULE"),
+]
 
-RPI_VARIANTS = {
-"0002" : ["Model B Rev v1.0", "RPI1"],
+# Generic pattern: "Raspberry Pi <N>" → "RPI<N>".
+# Handles Pi 2, 3, 4, 5, 6, … without needing explicit rules for each.
+_NUMERIC_GENERATION_RE = re.compile(r"raspberry pi (\d+)", re.IGNORECASE)
 
-"0003" : ["Model B Rev v1.0 ECN0001 (no fuses, D14 removed)", "RPI1"],
 
-"0004" : ["Model B Rev v2.0", "RPI1"],
-"0005" : ["Model B Rev v2.0", "RPI1"],
-"0006" : ["Model B Rev v2.0", "RPI1"],
+def _read_device_tree_model():
+    """Read the model string from /proc/device-tree/model (NUL-terminated)."""
+    try:
+        with open("/proc/device-tree/model", "r") as f:
+            return f.read().rstrip('\x00').strip()
+    except EnvironmentError:
+        return None
 
-"0007" : ["Model A v2.0", "RPI1"],
-"0008" : ["Model A v2.0", "RPI1"],
-"0009" : ["Model A v2.0", "RPI1"],
 
-"000d" : ["Model B Rev v2.0", "RPI1"],
-"000e" : ["Model B Rev v2.0", "RPI1"],
-"000f" : ["Model B Rev v2.0", "RPI1"],
-
-"0010" : ["Model B+ v1.2", "RPI1"],
-"0013" : ["Model B+ v1.2", "RPI1"],
-"900032" : ["Model B+ v1.2", "RPI1"],
-
-"0011" : ["Compute Module v1.0", "RPI-COMPUTE-MODULE"],
-"0014" : ["Compute Module v1.0", "RPI-COMPUTE-MODULE"],
-
-"900061" : ["Compute Module v1.1", "RPI-COMPUTE-MODULE"],
-
-"0012" : ["Model A+ v1.1", "RPI1"],
-"0015" : ["Model A+ v1.1", "RPI1"],
-"900021" : ["Model A+ v1.1", "RPI1"],
-
-"a01040" : ["Pi 2 Model B v1.0", "RPI2"],
-
-"a01041" : ["Pi 2 Model B v1.1", "RPI2"],
-"a21041" : ["Pi 2 Model B v1.1", "RPI2"],
-
-"a22042" : ["Pi 2 Model B v1.2", "RPI2"],
-"a02042" : ["Pi 2 Model B v1.2", "RPI2"],
-
-"900092" : ["Pi Zero v1.2 Sony", "RPI0"],
-"920092" : ["Pi Zero v1.2 Embest", "RPI0"],
-
-"900093" : ["Pi Zero v1.3 Sony", "RPI0"],
-"920093" : ["Pi Zero v1.3 Embest", "RPI0"],
-
-"9000C1" : ["Pi Zero W v1.1", "RPI0"],
-
-"902120" : ["Pi Zero 2W v1.0", "RPI0-2"],
-
-"a02082" : ["Pi 3 Model B v1.2", "RPI3"],
-"a22082" : ["Pi 3 Model B v1.2", "RPI3"],
-"a32082" : ["Pi 3 Model B v1.2", "RPI3"],
-"a52082" : ["Pi 3 Model B v1.2", "RPI3"],
-"a22083" : ["Pi 3 Model B v1.3", "RPI3"],
-
-"a020d3" : ["Pi 3 Model B+ v1.3", "RPI3B+"],
-
-"9020e0" : ["Pi 3 Model A+ v1.0", "RPI3A+"],
-
-"a03111" : ["Pi 4 Model B 1G v1.1", "RPI4"],
-"b03111" : ["Pi 4 Model B 2G v1.1", "RPI4"],
-"b03112" : ["Pi 4 Model B 2G v1.2", "RPI4"],
-"b03114" : ["Pi 4 Model B 2G v1.4", "RPI4"],
-"b03115" : ["Pi 4 Model B 2G v1.5", "RPI4"],
-"c03111" : ["Pi 4 Model B 4G v1.1", "RPI4"],
-"c03112" : ["Pi 4 Model B 4G v1.2", "RPI4"],
-"c03114" : ["Pi 4 Model B 4G v1.4", "RPI4"],
-"c03115" : ["Pi 4 Model B 4G v1.5", "RPI4"],
-"d03114" : ["Pi 4 Model B 8G v1.4", "RPI4"],
-"d03115" : ["Pi 4 Model B 8G v1.5", "RPI4"],
-
-"c03130" : ["Pi 400 v1.0", "RPI400"],
-
-"a020a0" : ["Compute Module 3 v1.0", "RPI-COMPUTE-MODULE3"],
-"a220a0" : ["Compute Module 3 v1.0 Embest", "RPI-COMPUTE-MODULE3"],
-"a02100" : ["Compute Module 3+ v1.0", "RPI-COMPUTE-MODULE3"],
-
-"a03140" : ["Compute Module 4 1G v1.0", "RPI-COMPUTE-MODULE4"],
-"b03140" : ["Compute Module 4 2G v1.0", "RPI-COMPUTE-MODULE4"],
-"c03140" : ["Compute Module 4 4G v1.0", "RPI-COMPUTE-MODULE4"],
-"d03140" : ["Compute Module 4 8G v1.0", "RPI-COMPUTE-MODULE4"]
-}
-
-# represents indexes for each corresponding key in the above dictionary
-RPI_MODEL_AND_PCBREV = 0
-RPI_GENERATION_MODEL = 1
-
-def find_revision_line(lines):
-    for line in lines:
-        if line.split("\t")[0] == "Revision":
-            return line
-
+def _get_generation_from_model(model_str):
+    """Map a /proc/device-tree/model string to a generation code."""
+    lower = model_str.lower()
+    # Check explicit overrides first.
+    for pattern, code in _GENERATION_RULES:
+        if re.search(pattern, lower):
+            return code
+    # Generic numeric extraction: "Raspberry Pi 6 …" → "RPI6".
+    m = _NUMERIC_GENERATION_RE.search(lower)
+    if m:
+        return "RPI" + m.group(1)
+    # Catch-all for Pi 1 (model string has no generation number).
+    if re.search(r"raspberry pi", lower):
+        return "RPI1"
+    return "NOT_FOUND_" + model_str
 
 
 def getRPIHardwareRevCode():
     """
-    Returns the hardware revision of the Raspberry Pi.
-    If it can't find anything, it returns "NOT_FOUND".
-    If there's an error while reading the file, it returns a None.
-    Examples of strings returned : "Model B Rev 2", "Model A+", "Pi 3 Model B", etc.
-    Look into the dictionary to see all the possible variants.
+    Returns the Raspberry Pi model description string read from
+    /proc/device-tree/model, e.g. "Raspberry Pi 4 Model B Rev 1.5".
+    Returns "NOT_FOUND" if the string is empty.
+    Returns None on read error (device tree not available).
     """
-    cpuinfo_lines = readLinesFromFile("/proc/cpuinfo")
-    rpi_description = ""
+    model = _read_device_tree_model()
+    if model is None:
+        return None
+    return model if model else "NOT_FOUND"
 
-    if  cpuinfo_lines is not None:
-        revision_line = find_revision_line(cpuinfo_lines)
-        revision = revision_line.split(":")[-1]
-        revision = revision.strip()
-
-        if revision in RPI_VARIANTS.keys():
-            rpi_description = RPI_VARIANTS[revision][RPI_MODEL_AND_PCBREV]
-        else:
-            rpi_description = "NOT_FOUND_" + revision
-
-    return rpi_description
 
 def getRPIGenerationCode():
     """
-    Returns the Raspberry Pi's generation model.
-    If it can't find anything, it returns "NOT_FOUND".
-    If there's an error while reading the file, it returns a None.
-    Depending on the Raspberry Pi's model, the function can return the following strings:
-    "RPI0"
-    "RPI1"
-    "RPi2"
-    "RPI3"
-    "RPI3B+"
-    "RPI3A+"
-    "RPI4"
-    "RPI-COMPUTE-MODULE"
+    Returns the Raspberry Pi generation code string.
+    Possible return values:
+        "RPI0"                  Raspberry Pi Zero (original)
+        "RPI0-2"                Raspberry Pi Zero 2 W
+        "RPI1"                  Raspberry Pi 1 (A, B, A+, B+)
+        "RPI2"                  Raspberry Pi 2
+        "RPI3"                  Raspberry Pi 3 Model B
+        "RPI3B+"                Raspberry Pi 3 Model B+
+        "RPI3A+"                Raspberry Pi 3 Model A+
+        "RPI4"                  Raspberry Pi 4 / 400
+        "RPI5"                  Raspberry Pi 5
+        "RPI6", "RPI7", …       Future numbered models (auto-derived)
+        "RPI-COMPUTE-MODULE"    Compute Module (original)
+        "RPI-COMPUTE-MODULE3"   Compute Module 3 / 3+
+        "RPI-COMPUTE-MODULE4"   Compute Module 4
+        "NOT_FOUND_<string>"    Model present in device tree but not recognised
+        None                    Error reading /proc/device-tree/model
     """
+    model = _read_device_tree_model()
+    if model is None:
+        return None
+    return _get_generation_from_model(model)
 
-    cpuinfo_lines = readLinesFromFile("/proc/cpuinfo")
-    rpi_description = ""
-
-    if not cpuinfo_lines is None:
-        revision_line = find_revision_line(cpuinfo_lines)
-        revision = revision_line.split(":")[-1]
-        revision = revision.strip()
-
-        if revision in RPI_VARIANTS.keys():
-            rpi_description = RPI_VARIANTS[revision][RPI_GENERATION_MODEL]
-        else:
-            rpi_description = "NOT_FOUND_" + revision
-
-    return rpi_description
 
 def readLinesFromFile(filename):
     """
-    Returns the read file as a list of strings.
-    Each element of the list represents a line.
-    On error it returns None.
+    Returns the contents of a file as a list of lines, or None on error.
     """
     try:
-        with open(filename, "r") as input_file:
-            lines = input_file.readlines()
-        return lines
-
+        with open(filename, "r") as f:
+            return f.readlines()
     except EnvironmentError:
         return None
 
-if __name__ == '__main__':
 
-    print( getRPIGenerationCode())
+if __name__ == '__main__':
+    print(getRPIHardwareRevCode())
+    print(getRPIGenerationCode())

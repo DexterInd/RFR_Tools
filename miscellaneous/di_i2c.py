@@ -6,10 +6,8 @@
 #
 # Python I2C drivers
 
-from __future__ import print_function
-from __future__ import division
-
 import time
+import threading
 import di_mutex
 
 __version__ = "1.3.2"
@@ -31,6 +29,42 @@ else:
     raise IOError("RPI_1 module not supported")
 
 
+def _open_i2c_dev(devpath):
+    """Open an I2C device, raising a clear error if the bus is not available."""
+    import os
+    if not os.path.exists(devpath):
+        raise OSError(
+            f"I2C device '{devpath}' not found. "
+            "Please enable I2C: run 'sudo raspi-config' → Interface Options → I2C → Enable, "
+            "or add 'dtparam=i2c_arm=on' to /boot/firmware/config.txt, then reboot."
+        )
+    return I2C(devpath)
+
+
+# Singletons for robot controller instances.
+# Multiple DI_I2C objects for different grove/sensor ports must share one
+# controller instance to avoid SPI bus conflicts from concurrent GoPiGo3()
+# or BrickPi3() constructors.
+_gpg3_instance = None
+_bp3_instance = None
+
+
+def _get_gpg3():
+    global _gpg3_instance
+    if _gpg3_instance is None:
+        gopigo3_module = __import__("gopigo3")
+        _gpg3_instance = gopigo3_module.GoPiGo3()
+    return _gpg3_instance
+
+
+def _get_bp3():
+    global _bp3_instance
+    if _bp3_instance is None:
+        brickpi3_module = __import__("brickpi3")
+        _bp3_instance = brickpi3_module.BrickPi3()
+    return _bp3_instance
+
+
 class DI_I2C(object):
     """ Dexter Industries I2C drivers for hardware and software I2C busses """
 
@@ -40,9 +74,9 @@ class DI_I2C(object):
         Keyword arguments:
             bus -- The I2C bus:
                 "RPI_1" - RPi hardware I2C
-                "RPI_1SW" - RPi software I2C
-                "GPG3_AD1" - GPG3 AD1 software I2C
-                "GPG3_AD2" - GPG3 AD2 software I2C
+                "RPI_1SW" - Deprecated (wiringpi removed in Trixie); transparently redirected to "RPI_1"
+                "GPG3_AD1" - GPG3 AD1 software I2C (via GoPiGo3 grove port)
+                "GPG3_AD2" - GPG3 AD2 software I2C (via GoPiGo3 grove port)
             address -- the slave I2C address. Formatted as bits 0-6, not 1-7.
             big_endian (default True) -- Big endian?
         """
@@ -57,15 +91,22 @@ class DI_I2C(object):
                 self.i2c_bus = smbus.SMBus(1)
             elif RPI_1_Module == "periphery":
                 self.bus_name = bus
-                self.i2c_bus = I2C("/dev/i2c-1")
+                self.i2c_bus = _open_i2c_dev("/dev/i2c-1")
         elif bus == "RPI_1SW":
-            self.bus_name = bus
-            self.i2c_bus = DI_I2C_RPI_SW()
+            # Software I2C (wiringpi) is not available on Trixie (Debian 12+).
+            # Transparently redirect to hardware I2C on /dev/i2c-1.
+            self.bus_name = "RPI_1"
+            if RPI_1_Module == "periphery":
+                self.i2c_bus = _open_i2c_dev("/dev/i2c-1")
+            elif RPI_1_Module == "smbus":
+                self.i2c_bus = smbus.SMBus(1)
+            elif RPI_1_Module == "pigpio":
+                self.i2c_bus = pigpio.pi()
+                self.i2c_bus_handle = None
         elif bus == "GPG3_AD1" or bus == "GPG3_AD2":
             self.bus_name = bus
 
-            self.gopigo3_module = __import__("gopigo3")
-            self.gpg3 = self.gopigo3_module.GoPiGo3()
+            self.gpg3 = _get_gpg3()
             if bus == "GPG3_AD1":
                 self.port = self.gpg3.GROVE_1
             elif bus == "GPG3_AD2":
@@ -75,8 +116,7 @@ class DI_I2C(object):
         elif bus == "BP3_1" or bus == "BP3_2" or bus == "BP3_3" or bus == "BP3_4":
             self.bus_name = bus
 
-            self.brickpi3_module = __import__("brickpi3")
-            self.bp3 = self.brickpi3_module.BrickPi3()
+            self.bp3 = _get_bp3()
             if bus == "BP3_1":
                 self.port = self.bp3.PORT_1
             elif bus == "BP3_2":
@@ -91,14 +131,27 @@ class DI_I2C(object):
             raise IOError("I2C bus not supported")
 
         self.mutex = di_mutex.DI_Mutex(name = ("I2C_Bus_" + bus))
+        self._thread_lock = threading.Lock()  # intra-process thread safety (fcntl is per-process only)
         self.set_address(address)
         self.big_endian = big_endian
 
-    def __del__(self):
+    def close(self):
+        """Explicitly close the underlying I2C bus resource."""
+        if RPI_1_Module == "periphery" and hasattr(self, "i2c_bus") and self.i2c_bus is not None:
+            try:
+                self.i2c_bus.close()
+            except Exception:
+                pass
+            self.i2c_bus = None
+        elif RPI_1_Module == "pigpio" and hasattr(self, "i2c_bus") and self.i2c_bus is not None:
+            try:
+                self.i2c_bus.stop()
+            except Exception:
+                pass
+            self.i2c_bus = None
 
-        # release pigpio resources
-        if RPI_1_Module == "pigpio":
-    	    self.i2c_bus.stop()
+    def __del__(self):
+        self.close()
 
     def reconfig_bus(self):
         """Reconfigure I2C bus
@@ -134,7 +187,12 @@ class DI_I2C(object):
         # type cast to int to ensure compatibility
         inBytes = int(inBytes)
 
-        self.mutex.acquire() # acquire the bus mutex
+        with self._thread_lock:  # serialize concurrent threads within this process
+            return self._transfer_locked(outArr, inBytes)
+
+    def _transfer_locked(self, outArr, inBytes):
+        """Internal transfer called with _thread_lock already held."""
+        self.mutex.acquire() # acquire the inter-process bus mutex
 
         return_val = None
 
@@ -189,19 +247,16 @@ class DI_I2C(object):
                         self.i2c_bus.transfer(self.address, msg)
                         return_val = msg[0].data
 
-            elif self.bus_name == "RPI_1SW":
-                return_val = self.i2c_bus.transfer(self.address, outArr, inBytes)
-
             elif self.bus_name == "GPG3_AD1" or self.bus_name == "GPG3_AD2":
                 try:
                     return_val = self.gpg3.grove_i2c_transfer(self.port, self.address, outArr, inBytes)
-                except self.gopigo3_module.I2CError:
+                except __import__("gopigo3").I2CError:
                     raise IOError("[Errno 5] Input/output error")
 
             elif self.bus_name == "BP3_1" or self.bus_name == "BP3_2" or self.bus_name == "BP3_3" or self.bus_name == "BP3_4":
                 try:
                     return_val = self.bp3.i2c_transfer(self.port, self.address, outArr, inBytes)
-                except self.brickpi3_module.I2CError:
+                except __import__("brickpi3").I2CError:
                     raise IOError("[Errno 5] Input/output error")
         except:
             self.mutex.release() # release the bus mutex before raising the exception
@@ -380,8 +435,12 @@ class DI_I2C(object):
             outArr = []
         return self.transfer(outArr, len)
 
-import wiringpi
-import atexit
+try:
+    import wiringpi
+    import atexit
+    _wiringpi_available = True
+except ImportError:
+    _wiringpi_available = False
 
 
 class DI_I2C_RPI_SW(object):
